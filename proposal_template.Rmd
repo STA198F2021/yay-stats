@@ -38,4 +38,14 @@ The outcome variable will be the percentage of recovered COVID cases over the pe
 
 Statistical methods that will be useful in answering the question include classifying countries by both vaccination rates and income and then generating means and standard deviations in order to compare the different groups. We will also use statistics to create a similarity value between each of the countries/groups nutrition data and the recommended values. We will do this by taking the average of the absolute values of differences between the given values for each food group and the recommended values. Therefore, the countries/groups with caloric distributions closest to the recommended values will have values closer to 0. This value will help us support our hypothesized answer that countries/groups with dietary distributions closest to the recommended distribution will have higher percentages of COVID cases that recover by providing a single numerical value to quantify the adherence of the country to the recommended diet. The standard deviations as well as t-tests performed between the calculated values for the groups will help us determine if our results are significant or potentially due to chance variation. 
 
+```{r}
+food %>%
+mutate(recovery=Recovered/Confirmed)%>%
+ggplot(aes(x=Obesity, y=recovery, color=Country))+geom_point()+ theme(legend.position = "none")+labs(title="Obesity rates compared to COVID Recovery Rates by Country", subtitle="Colors indicate country", x="Obesity Rate", y="Recovery Rate")
+  
+food %>%
+mutate(recovery=Recovered/Confirmed)%>%
+ggplot(aes(x=Undernourished, y=recovery, color=Country))+geom_point()+ theme(legend.position = "none")+labs(title="Undernourishment rates compared to COVID Recovery Rates by Country", subtitle="Colors indicate country", x="Undernourishment Rate", y="Recovery Rate")
 
+
+```
