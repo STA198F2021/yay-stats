@@ -19,28 +19,29 @@ food <- readr::read_csv("data/Food_Supply_kcal_Data.csv")
 
 # Introduction and Data, including Research Questions
 
-We are interested in looking at the relationship between COVID-19 outcomes and nutrition worldwide. The USDA Center for Nutrition Policy and Promotion suggests a dietary intake which consists of 30% grains, 40% vegetable, 10% fruits, and 20% proteins (dietaryguidlines.gov). Previous studies demonstrate an increased mortality in patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020). Furthermore, previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020). Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020). We are ultimately interested in seeing if countries that tend to consume similar diets to those suggested by the USDA show increased rates of recovery from COVID-19 controlling for income and vaccination levels.
+  We are interested in looking at the relationship between COVID-19 outcomes and nutrition worldwide. The USDA Center for Nutrition Policy and Promotion suggests a dietary intake which consists of 30% grains, 40% vegetable, 10% fruits, and 20% proteins (dietaryguidlines.gov). Previous studies demonstrate an increased mortality in patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020). Furthermore, previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020). Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020). We are ultimately interested in seeing if countries that tend to consume similar diets to those suggested by the USDA show decreased rates of mortality from COVID-19 controlling for income and vaccination levels.
+  This dataset, “COVID-19 Healthy Diet Dataset” comes from Kaggle. The dataset provides energy intake (kcal) as percentages of total diet by food group. In addition, it provides percentages of obesity and undernourished individuals. Finally it provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries. The food supply quantities in addition to the prevalence of obesity and undernourishment in the populations were obtained from the Food and Agricultural Organization of the United Nations, the population count was taken from the Population Reference Bureau, and the Johns Hopkins Center for Systems Science and Engineering was used for COVID-19 data. 
 
-This dataset, “COVID-19 Healthy Diet Dataset” comes from Kaggle. The dataset provides energy intake (kcal) as percentages of total diet by food group. In addition, it provides percentages of obesity and undernourished individuals. Finally it provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries. The food supply quantities in addition to the prevalence of obesity and undernourishment in the populations were obtained from the Food and Agricultural Organization of the United Nations, the population count was taken from the Population Reference Bureau, and the Johns Hopkins Center for Systems Science and Engineering was used for COVID-19 data. 
-
-Works Cited:
-
-Iddir M, Brito A, Dingeo G, et al. Strengthening the Immune System and Reducing Inflammation and Oxidative Stress through Diet and Nutrition: Considerations during the COVID-19 Crisis. Nutrients. 2020;12(6):1562. doi:10.3390/nu12061562
-
-Messina G, Polito R, Monda V, Cipolloni L, Di Nunno N, Di Mizio G, Murabito P, Carotenuto M, Messina A, Pisanelli D, Valenzano A, Cibelli G, Scarinci A, Monda M, Sessa F. Functional Role of Dietary Intervention to Improve the Outcome of COVID-19: A Hypothesis of Work. International Journal of Molecular Sciences. 2020; 21(9):3104. https://doi.org/10.3390/ijms21093104
-
-Onishi J. C., Häggblom M. M., Shapses S. A., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4):e01723-20. doi:10.1128/mBio.01723-20
-
+Works Cited: 
+  Iddir M., et al. Strengthening the Immune System and Reducing Inflammation and Oxidative Stress through Diet and Nutrition: Considerations during the COVID-19 Crisis. Nutrients. 2020;12(6):1562.; Messina G., et al. Functional Role of Dietary Intervention to Improve the Outcome of COVID-19: A Hypothesis of Work. International Journal of Molecular Sciences. 2020; 21(9):3104.; Onishi J., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4).
 
 # Glimpse
-
-```{r}
+```{r glimpse, echo = FALSE}
 glimpse(food)
 ```
-
 # Data Analysis Plan
 
-The outcome variable will be the percentage of recovered COVID cases over the percentage of total COVID cases, also known as the percentage of COVID cases in that country that recover. The predictor variable is how closely the diet of the country matches up with the USDA Center for Nutrition Policy and Promotion recommended values. Comparison groups include each country and countries grouped by income level and vaccination rates. 
+The outcome variable will be the percentage of COVID deaths over the percentage of total COVID cases, also known as the percent mortality of COVID cases in that country. The predictor variable is how closely the diet of the country matches up with the USDA Center for Nutrition Policy and Promotion recommended values. Comparison groups include each country and countries grouped by income level and vaccination rates, which we will research and include. 
+
+This chart shows the calculation for the average percent of total calories accounted for by each of the selected food group across all the countries in the data set. 
+
+```{r table_food_averages, echo = FALSE}
+food%>%
+summarize(Fat=mean(`Animal fats`), Grains=mean(`Cereals - Excluding Beer`), Meat=mean(Meat),  Vegetables = mean(`Vegetal Products`), Sugar=mean(`Sugar & Sweeteners`), Fruits = mean(`Fruits - Excluding Wine`)) %>%
+  print()
+```
+
+This preliminary graph helps us visualize the distribution of countries in our dataset by income classifications and creates groups for comparison within the study. This helps us learn about our data by showing that there is a shortage of data for LICs but a somewhat equal distribution for the other groups which will help us critically evaluate our future analysis. 
 
 ```{r summary_statistics, massage = FALSE, echo = FALSE}
 
@@ -52,15 +53,30 @@ Pakistan", "Samoa", "Sao Tome and Principe", "Senegal", "Solomon Islands","Sri L
 Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "Russian Federation", "Saint Lucia", "Saint Vincent and the Grenadines", "Serbia", "Senegal", "South Africa", "Thailand", "Turkey", "Turkmenistan", "Venezuela (Bolivarian Republic of)"),
              "UMIC", "HIC"))))
 
+```
+
+```{r bar-graph, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7}
+food %>%
+  group_by(income) %>%
+  summarize(count = n()) %>%
+  ggplot(aes(x = income, y = count)) + geom_col(fill = "aquamarine4") + labs(y = "Number of Countries", x = "Income Status", title = "Number of Countries Within Dataset Classified into Each Income Group", subtitle = "HIC = High Income Countries, LIC = Low Income Countries, 
+LMIC = Lower Middle Income Countries, UMIC = Upper Middle Income Countries")
+```
+
+This visualization helps us learn more about our data by showing that the median percent mortality for COVID cases is similar across all income groups. However, the ranges and skews of the data seem to differ by income status of the country and could be a potentially important consideration during future analysis. 
+
+```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7}
 food <- food %>%
   mutate(death_rate=Deaths/Confirmed) 
 
 food %>%
-  group_by(income) %>%
-  summarize(count = n()) %>%
-  ggplot(aes(x = income, y = count)) + geom_col()
+  filter(Country != 'Yemen') %>%
+  filter(Country != 'Mexico') %>%
+  ggplot(aes(x = death_rate, fill = income)) + geom_boxplot() + labs(y = NULL, x = "Percent Mortality for Confirmed Covid Cases", fill = "Income Status", title = "Boxplot Showing COVID Mortality Data Group by Country Income Status", subtitle = "Note: Yemen and Mexico removed as outliers to better appreciate distribution of data")
 ```
 
 Statistical methods that will be useful in answering the question include classifying countries by both vaccination rates and income and then generating means and standard deviations in order to compare the different groups. We will also use statistics to create a similarity value between each of the countries/groups nutrition data and the recommended values. We will do this by taking the average of the absolute values of differences between the given values for each food group and the recommended values. Therefore, the countries/groups with caloric distributions closest to the recommended values will have values closer to 0. This value will help us support our hypothesized answer that countries/groups with dietary distributions closest to the recommended distribution will have higher percentages of COVID cases that recover by providing a single numerical value to quantify the adherence of the country to the recommended diet. The standard deviations as well as t-tests performed between the calculated values for the groups will help us determine if our results are significant or potentially due to chance variation. 
+
+
 
 
