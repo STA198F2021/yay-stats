@@ -37,26 +37,22 @@ The outcome variable will be the percentage of recovered COVID cases over the pe
 ```{r summary_statistics, massage = FALSE, echo = FALSE}
 
 food <- food %>%
-  mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau"),"LIC", 
-                         ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti"), "LMIC", 
-                         ifelse(Country %in% c("Albania","Argentina","Armenia","Azerbaijan", "Belarus","Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana"),
+  mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau", "Korea, Dem. People's Rep", "Liberia", "Madagascar", "Malawi", "Mali", "Mozambique", "Rwanda", "Sierra Leone", "Sudan", "Togo", "Uganda", "Yemen"),"LIC", 
+                         ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti", "Honduras", "India", "Indonesia", "Iran (Islamic Republic of)", "Kenya", "Kiribati", "Kyrgyzstan", "Lao People's Democratic Republic", "Lesotho", "Mauritania", "Mongolia", "Morocco", "Myanmar", "Nepal", "Nicaragua", "Niger", "Nigeria", "	
+Pakistan", "Samoa", "Sao Tome and Principe", "Senegal", "Solomon Islands","Sri Lanka", "Suriname", "Tajikistan", "Timor-Leste", "Tunisia", "Ukraine", "United Republic of Tanzania", "Uzbekistan", "Vanuatu", "Vietnam", "Zambia", "Zimbabwe"), "LMIC", 
+                         ifelse(Country %in% c("Albania","Argentina","Armenia","Azerbaijan", "Belarus","Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Lebanon", "Malaysia", "Maldives", "Mauritius", "Mexico", "Montenegro","Namibia", "North Macedonia", "	
+Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "Russian Federation", "Saint Lucia", "Saint Vincent and the Grenadines", "Serbia", "Senegal", "South Africa", "Thailand", "Turkey", "Turkmenistan", "Venezuela (Bolivarian Republic of)"),
              "UMIC", "HIC"))))
 
 food <- food %>%
   mutate(death_rate=Deaths/Confirmed) 
 
+food %>%
+  group_by(income) %>%
+  summarize(count = n()) %>%
+  ggplot(aes(x = income, y = count)) + geom_col()
 ```
 
 Statistical methods that will be useful in answering the question include classifying countries by both vaccination rates and income and then generating means and standard deviations in order to compare the different groups. We will also use statistics to create a similarity value between each of the countries/groups nutrition data and the recommended values. We will do this by taking the average of the absolute values of differences between the given values for each food group and the recommended values. Therefore, the countries/groups with caloric distributions closest to the recommended values will have values closer to 0. This value will help us support our hypothesized answer that countries/groups with dietary distributions closest to the recommended distribution will have higher percentages of COVID cases that recover by providing a single numerical value to quantify the adherence of the country to the recommended diet. The standard deviations as well as t-tests performed between the calculated values for the groups will help us determine if our results are significant or potentially due to chance variation. 
 
-```{r}
-food %>%
-mutate(recovery=Recovered/Confirmed)%>%
-ggplot(aes(x=Obesity, y=recovery, color=Country))+geom_point()+ theme(legend.position = "none")+labs(title="Obesity rates compared to COVID Recovery Rates by Country", subtitle="Colors indicate country", x="Obesity Rate", y="Recovery Rate")
-  
-food %>%
-mutate(recovery=Recovered/Confirmed)%>%
-ggplot(aes(x=Undernourished, y=recovery, color=Country))+geom_point()+ theme(legend.position = "none")+labs(title="Undernourishment rates compared to COVID Recovery Rates by Country", subtitle="Colors indicate country", x="Undernourishment Rate", y="Recovery Rate")
 
-
-```
