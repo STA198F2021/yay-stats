@@ -23,6 +23,14 @@ We are interested in looking at the relationship between COVID-19 outcomes and n
 
 This dataset, “COVID-19 Healthy Diet Dataset” comes from Kaggle. The dataset provides energy intake (kcal) as percentages of total diet by food group. In addition, it provides percentages of obesity and undernourished individuals. Finally it provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries. The food supply quantities in addition to the prevalence of obesity and undernourishment in the populations were obtained from the Food and Agricultural Organization of the United Nations, the population count was taken from the Population Reference Bureau, and the Johns Hopkins Center for Systems Science and Engineering was used for COVID-19 data. 
 
+Works Cited:
+
+Iddir M, Brito A, Dingeo G, et al. Strengthening the Immune System and Reducing Inflammation and Oxidative Stress through Diet and Nutrition: Considerations during the COVID-19 Crisis. Nutrients. 2020;12(6):1562. doi:10.3390/nu12061562
+
+Messina G, Polito R, Monda V, Cipolloni L, Di Nunno N, Di Mizio G, Murabito P, Carotenuto M, Messina A, Pisanelli D, Valenzano A, Cibelli G, Scarinci A, Monda M, Sessa F. Functional Role of Dietary Intervention to Improve the Outcome of COVID-19: A Hypothesis of Work. International Journal of Molecular Sciences. 2020; 21(9):3104. https://doi.org/10.3390/ijms21093104
+
+Onishi J. C., Häggblom M. M., Shapses S. A., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4):e01723-20. doi:10.1128/mBio.01723-20
+
 
 # Glimpse
 
