@@ -42,11 +42,13 @@ food <- food %>%
 meanfood <- food %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other))
 
-
-food %>%
+meanfoodincome <- food %>%
   group_by(income) %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
-  print()
+  add_row(income="USDA", meangrains=30, meanveg=40, meanfruit=10, meanprotein=20) %>% 
+  pivot_longer(cols=meangrains:meanother, names_to = "Means", values_to = "PercentDiet") 
+
+  ggplot(data=meanfoodincome, aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge")
   
 #t.test()
 
