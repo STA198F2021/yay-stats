@@ -1,28 +1,60 @@
 ---
 title: "Project"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r load-packages, message = FALSE, warning = FALSE}
+library(tidyverse) 
+``` 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r load-data, message = F}
+food <- readr::read_csv("data/Food_Supply_kcal_Data.csv")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r coutnries}
+food <- food %>%
+  mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau", "Korea, Dem. People's Rep", "Liberia", "Madagascar", "Malawi", "Mali", "Mozambique", "Rwanda", "Sierra Leone", "Sudan", "Togo", "Uganda", "Yemen"),"LIC", 
+                         ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti", "Honduras", "India", "Indonesia", "Iran (Islamic Republic of)", "Kenya", "Kiribati", "Kyrgyzstan", "Lao People's Democratic Republic", "Lesotho", "Mauritania", "Mongolia", "Morocco", "Myanmar", "Nepal", "Nicaragua", "Niger", "Nigeria", "	
+Pakistan", "Samoa", "Sao Tome and Principe", "Senegal", "Solomon Islands","Sri Lanka", "Suriname", "Tajikistan", "Timor-Leste", "Tunisia", "Ukraine", "United Republic of Tanzania", "Uzbekistan", "Vanuatu", "Vietnam", "Zambia", "Zimbabwe"), "LMIC", 
+                         ifelse(Country %in% c("Albania","Argentina","Armenia","Azerbaijan", "Belarus","Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Lebanon", "Malaysia", "Maldives", "Mauritius", "Mexico", "Montenegro","Namibia", "North Macedonia", "	
+Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "Russian Federation", "Saint Lucia", "Saint Vincent and the Grenadines", "Serbia", "Senegal", "South Africa", "Thailand", "Turkey", "Turkmenistan", "Venezuela (Bolivarian Republic of)"),
+             "UMIC", "HIC"))))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+food <- food %>% 
+  mutate(Grains = `Cereals - Excluding Beer` + `Starchy Roots`) %>% 
+  mutate(Vegetables2 = Pulses + `Vegetal Products` + Vegetables) %>% 
+  mutate(Fruits = `Fruits - Excluding Wine`) %>% 
+  mutate(Fats = `Animal fats` + Oilcrops + Treenuts + `Vegetable Oils`) %>% 
+  mutate(Protein = `Animal Products` + Eggs + `Fish, Seafood` + Meat + `Milk - Excluding Butter` + Offals) %>% 
+  mutate('Alcohol/Stimulants' = `Alcoholic Beverages` + Stimulants) %>% 
+  mutate(Other = `Aquatic Products, Other` + Miscellaneous + Spices + `Sugar Crops` + `Sugar & Sweeteners`)
+```
+
+```{r}
+meanfood <- food %>%
+  summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other))
+
+
+food %>%
+  group_by(income) %>%
+  summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
+  print()
+  
+#t.test()
+
+#ggplot(food, aes(x = Grains, Vegetables, Fruits, Fats, Protein)) + geom_bar()
+
+```
+
+
+
+```
+
