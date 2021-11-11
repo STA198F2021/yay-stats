@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-packages, message = FALSE, warning = FALSE}
 library(tidyverse) 
+library(tidymodels)
 ``` 
 
 ```{r load-data, message = F}
@@ -60,19 +61,43 @@ tfood<-food %>%
   group_by(income) %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
   add_row(income="USDA", meangrains=30, meanveg=40, meanfruit=10, meanprotein=20)
+```
 
-t.test(tfood$meangrains, mu=30)
-t.test(tfood$meanveg, mu=40)
-t.test(tfood$meanfruit, mu=10)
-t.test(tfood$meanprotein, mu=20)
+```{r}
+food <- food %>% 
+   mutate(rec_rate=Recovered/Confirmed) 
 
-summary(aov(meangrains~income,data=tfood))
+res <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ income, data = food) %>%
+  tidy() 
+print(res)
 
-#ggplot(food, aes(x = Grains, Vegetables, Fruits, Fats, Protein)) + geom_bar()
+food <- food %>% 
+   mutate(death_rate=Deaths/Confirmed) 
+
+res2 <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(death_rate ~ income, data = food) %>%
+  tidy() 
+print(res2)
+```
+```{r}
+food <- food %>% 
+  mutate(adherance_grains = (30 - Grains)^2) %>% 
+  mutate(adherance_veg = (40 - Vegetables2)^2) %>% 
+  mutate(adherance_fruit = (10 - Fruits)^2) %>% 
+  mutate(adherance_protein = (20 - Protein)^2) %>% 
+  mutate(adherance_tot = adherance_grains + adherance_protein + adherance_fruit + adherance_veg)
+```
+
+```{r}
+reg <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(death_rate ~ adherance_tot + income, data = food) %>%
+  tidy() 
+print(reg)
 
 ```
 
-
-
-```
 
