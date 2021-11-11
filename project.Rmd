@@ -48,7 +48,11 @@ meanfoodincome <- food %>%
   add_row(income="USDA", meangrains=30, meanveg=40, meanfruit=10, meanprotein=20) %>% 
   pivot_longer(cols=meangrains:meanother, names_to = "Means", values_to = "PercentDiet") 
 
-ggplot(data=meanfoodincome, aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Make up by Food Group", subtitle="broken down by income category and compared to USDA suggested diet")
+meanfoodincome %>%
+  mutate(income = fct_relevel(income, 
+            "HIC", "UMIC", "LMIC", 
+            "LIC", "USDA")) %>%
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Make up by Food Group", subtitle="broken down by income category and compared to USDA suggested diet")
 ```
 
 ```{r}
