@@ -58,7 +58,7 @@ food <- food %>%
   mutate('Alcohol/Stimulants' = `Alcoholic Beverages` + Stimulants) %>% 
   mutate(Other = `Aquatic Products, Other` + Miscellaneous + Spices + `Sugar Crops` + `Sugar & Sweeteners`)
 ```
-
+Our dataset included more specific dietary composition than the USDA values. Therefore, to be able to compare them, we grouped the datasets into broader dietary categories including grains, vegetables, fruits, fats, proteins, and a general miscellaneous category. We did so by reading the descriptions of what composes each variable in the dataset. 
 ```{r comparing_dietary_means_to_USDA}
 meanfood <- food %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other))
@@ -73,9 +73,11 @@ meanfoodincome %>%
   mutate(income = fct_relevel(income, 
             "HIC", "UMIC", "LMIC", 
             "LIC", "USDA")) %>%
-  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Make up by Food Group", subtitle="broken down by income category and compared to USDA suggested diet")
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Make up by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
+In this graph, we summarized the break down of diet by income country and also introduced a new column with the recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group represented in our data set.
 
+This graph suggests that in our analysis we should include income level as a possible predictor of covid outcomes since countries vary in their nutritions by income level. 
 ```{r}
 food <- food %>% 
    mutate(rec_rate=Recovered/(Confirmed)) %>% 
@@ -93,7 +95,9 @@ tfood<-food %>%
 
 summary(aov(rec_rate~income,data=food))
 ```
+Here, we created a variable for how much the average diet in each country differs from the suggested USDA value. We did so by subtract the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create adherance total variable. We squared them because eating too much or too little of a food group should not balance each other out, rather it should increase the deviation from the suggested intake. 
 
+To see if income level has an effect on recovery rate, we performed an ANOVA test. The results of our test indicate that 
 ```{r graphs_of_deviance_vs_recovery rate}
 food <- food %>% 
    mutate(rec_rate=Recovered/(Confirmed)) %>% 
@@ -122,7 +126,13 @@ ggplot(aes(x = adherance_tot, y = rec_rate, color=income)) +
     y = "COVID-19 Recovery Rate")
 
 ```
+Here we compared the relationship between deviation from USDA suggested intake with recovery rates from COVID-19. The recovery rates were calculated by calculated the percent of the population that recovered from COVID-19 with the percent of the population that was diagnosed with COVID-19.
 
+In the first graph, we see that there is a negative correlation between recovery rates and deviation from USDA suggested dietary intake. This suggests that as ones dietary intake begins to differ from the USDA suggested intake, they on average seem to have a lower change of recovering from COVID-19.
+
+To further look at this relationship, we compared this relationship by income level. We can see that while lower middle income and upper middle income countries have a slighty negative relationship, lower income countries almost show no relationship between deviation rate and recovery rate. In contrast, high income countries show the strongest correlation between deviation rate and recovery rate. 
+
+WHY?
 
 ```{r Linear_Model}
 res <- linear_reg() %>%
@@ -131,6 +141,4 @@ res <- linear_reg() %>%
   tidy() %>% 
   print()
 ```
-
-
-
+This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in adherance rate, the chances of recovering are on average 0.0002 lower. 
