@@ -1,22 +1,22 @@
 ---
 title: "Final Presentation"
 Author: Arthi Vaidyanathan and Denise Shkurovich
-Date: 11/12/2021
+Date: 11/16/2021
 output:
   pdf_document: default
   html_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load-packages, message = FALSE, warning = FALSE}
+```{r load-packages, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse) 
 library(tidymodels)
 ```
 
-```{r load-data, message = F}
+```{r load-data, message = F, echo = FALSE}
 food <- readr::read_csv("data/Food_Supply_kcal_Data.csv")
 ```
 
@@ -36,9 +36,9 @@ Messina G., et al. Functional Role of Dietary Intervention to Improve the Outcom
 
 Onishi J., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4).
 
-INCOME DATA FROM:
+INCOME DATA FROM: The World Bank
   
-```{r countries}
+```{r countries, echo = FALSE}
 food <- food %>%
   mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau", "Korea, Dem. People's Rep", "Liberia", "Madagascar", "Malawi", "Mali", "Mozambique", "Rwanda", "Sierra Leone", "Sudan", "Togo", "Uganda", "Yemen"),"LIC", 
                          ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti", "Honduras", "India", "Indonesia", "Iran (Islamic Republic of)", "Kenya", "Kiribati", "Kyrgyzstan", "Lao People's Democratic Republic", "Lesotho", "Mauritania", "Mongolia", "Morocco", "Myanmar", "Nepal", "Nicaragua", "Niger", "Nigeria", "	
@@ -48,7 +48,7 @@ Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "R
              "UMIC", "HIC"))))
 ```
 
-```{r make_food_categories}
+```{r make_food_categories, echo = FALSE}
 food <- food %>% 
   mutate(Grains = `Cereals - Excluding Beer` + `Starchy Roots`) %>% 
   mutate(Vegetables2 = Pulses + `Vegetal Products` + Vegetables) %>% 
@@ -59,7 +59,7 @@ food <- food %>%
   mutate(Other = `Aquatic Products, Other` + Miscellaneous + Spices + `Sugar Crops` + `Sugar & Sweeteners`)
 ```
 Our dataset included more specific dietary composition than the USDA values. Therefore, to be able to compare them, we grouped the datasets into broader dietary categories including grains, vegetables, fruits, fats, proteins, and a general miscellaneous category. We did so by reading the descriptions of what composes each variable in the dataset. 
-```{r comparing_dietary_means_to_USDA}
+```{r comparing_dietary_means_to_USDA, echo = FALSE}
 meanfood <- food %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other))
 
@@ -78,14 +78,14 @@ meanfoodincome %>%
 In this graph, we summarized the break down of diet by income country and also introduced a new column with the recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group represented in our data set.
 
 This graph suggests that in our analysis we should include income level as a possible predictor of covid outcomes since countries vary in their nutritions by income level. 
-```{r}
+```{r creating_deviation_varibles, echo = FALSE}
 food <- food %>% 
    mutate(rec_rate=Recovered/(Confirmed)) %>% 
-  mutate(adherance_grains = (30 - Grains)^2) %>% 
-  mutate(adherance_veg = (40 - Vegetables2)^2) %>% 
-  mutate(adherance_fruit = (10 - Fruits)^2) %>% 
-  mutate(adherance_protein = (20 - Protein)^2) %>% 
-  mutate(adherance_tot = adherance_grains + adherance_protein + adherance_fruit + adherance_veg) %>% 
+  mutate(deviance_grains = (30 - Grains)^2) %>% 
+  mutate(deviance_veg = (40 - Vegetables2)^2) %>% 
+  mutate(deviance_fruit = (10 - Fruits)^2) %>% 
+  mutate(deviance_protein = (20 - Protein)^2) %>% 
+  mutate(deviance_tot = deviance_grains + deviance_protein + deviance_fruit + deviance_veg) %>% 
   filter(rec_rate>0)
 
 tfood<-food %>%
@@ -95,22 +95,22 @@ tfood<-food %>%
 
 summary(aov(rec_rate~income,data=food))
 ```
-Here, we created a variable for how much the average diet in each country differs from the suggested USDA value. We did so by subtract the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create adherance total variable. We squared them because eating too much or too little of a food group should not balance each other out, rather it should increase the deviation from the suggested intake. 
+Here, we created a variable for how much the average diet in each country differs from the suggested USDA value. We did so by subtract the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create deviance total variable. We squared them because eating too much or too little of a food group should not balance each other out, rather it should increase the deviation from the suggested intake. 
 
 To see if income level has an effect on recovery rate, we performed an ANOVA test. The results of our test indicate that 
-```{r graphs_of_deviance_vs_recovery rate}
+```{r graphs_of_deviance_vs_recovery rate, echo = FALSE}
 food <- food %>% 
    mutate(rec_rate=Recovered/(Confirmed)) %>% 
-  mutate(adherance_grains = (30 - Grains)^2) %>% 
-  mutate(adherance_veg = (40 - Vegetables2)^2) %>% 
-  mutate(adherance_fruit = (10 - Fruits)^2) %>% 
-  mutate(adherance_protein = (20 - Protein)^2) %>% 
-  mutate(adherance_tot = adherance_grains + adherance_protein + adherance_fruit + adherance_veg) %>% 
+  mutate(deviance_grains = (30 - Grains)^2) %>% 
+  mutate(deviance_veg = (40 - Vegetables2)^2) %>% 
+  mutate(deviance_fruit = (10 - Fruits)^2) %>% 
+  mutate(deviance_protein = (20 - Protein)^2) %>% 
+  mutate(deviance_tot = deviance_grains + deviance_protein + deviance_fruit + deviance_veg) %>% 
   filter(rec_rate>0)
 
 food %>% 
-  filter(adherance_tot<750) %>% 
-ggplot(aes(x = adherance_tot, y = rec_rate)) +
+  filter(deviance_tot<750) %>% 
+ggplot(aes(x = deviance_tot, y = rec_rate)) +
   geom_point()+geom_smooth(method="lm") + labs(
     title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
     subtitle="linear model by income category",
@@ -118,8 +118,8 @@ ggplot(aes(x = adherance_tot, y = rec_rate)) +
     y = "COVID-19 Recovery Rate")
 
 food %>% 
-  filter(adherance_tot<750) %>% 
-ggplot(aes(x = adherance_tot, y = rec_rate, color=income)) +
+  filter(deviance_tot<750) %>% 
+ggplot(aes(x = deviance_tot, y = rec_rate, color=income)) +
   geom_point()+geom_smooth(method="lm", se = FALSE) + labs(
     title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
     x = "Deviation from USDA suggested diet",
@@ -134,11 +134,11 @@ To further look at this relationship, we compared this relationship by income le
 
 WHY?
 
-```{r Linear_Model}
+```{r Linear_Model, echo = FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ adherance_tot, data = food) %>% 
+  fit(rec_rate ~ deviance_tot, data = food) %>% 
   tidy() %>% 
   print()
 ```
-This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in adherance rate, the chances of recovering are on average 0.0002 lower. 
+This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
