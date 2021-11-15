@@ -1,7 +1,7 @@
 ---
 title: "Final Presentation"
-Author: Arthi Vaidyanathan and Denise Shkurovich
-Date: 11/16/2021
+author: "Arthi Vaidyanathan and Denise Shkurovich"
+date: "11/16/2021"
 output:
   pdf_document: default
   html_document: default
@@ -61,7 +61,7 @@ meanfood %>%
 
 ```
 
-We were then curious to see if the mean percentages of the dietary categories of countries generally aligned with the USDA values. This helps inform us if we are making a valid comparison between the data and USDA values for the duration of the project. In order to do so we calculated the means of each of the values and added an aditional colummn with the USDA values before plotting the bar graph. As shown, the values for grains, proteins, and vegetables are comparable to the USDA values indicating that our grouping of variables likely successfully captured the majority of dietary groups belonging to the broader categories. The value for fruits is significantly lower indicating that either the dataset does not accurately capture fruit consumption or countries on average eat significantly less fruit than recommended by the USDA. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group significantly represented in our data set.
+We were then curious to see if the mean percentages of the dietary categories of countries generally aligned with the USDA values. This helps inform us if we are making a valid comparison between the data and USDA values for the duration of the project. In order to do so we calculated the means of each of the values and added an additional column with the USDA values before plotting the bar graph. As shown, the values for grains, proteins, and vegetables are comparable to the USDA values indicating that our grouping of variables likely successfully captured the majority of dietary groups belonging to the broader categories. The value for fruits is significantly lower indicating that either the dataset does not accurately capture fruit consumption or countries on average eat significantly less fruit than recommended by the USDA. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group significantly represented in our data set.
   
 ```{r countries, echo = FALSE}
 food <- food %>% #grouping each country by their income classification group
@@ -87,7 +87,7 @@ meanfoodincome %>%
   mutate(income = fct_relevel(income, 
             "HIC", "UMIC", "LMIC", 
             "LIC", "USDA")) %>%
-  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Make up by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
 In this graph, we summarized the break down of diet by income country in comparison to the  recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. This graph suggests that in our analysis we should in fact include income level as a possible predictor of COVID outcomes since countries seem to show trends in their nutrition in most categories by income level. 
 
@@ -151,3 +151,9 @@ res <- linear_reg() %>%
   print()
 ```
 This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
+
+SUMMARY
+
+LIMITATIONS
+
+CONCLUSIONS
