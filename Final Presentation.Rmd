@@ -191,16 +191,21 @@ To further look at this relationship, we compared this relationship by income le
 
 WHY?
 
+## Linear model of correlation between dietary deviance and covid recovery rate
 ```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
   fit(rec_rate ~ deviance_tot, data = food) %>% 
-  tidy() 
+  tidy() %>% 
+  print ()
 
 linear<-lm(rec_rate~deviance_tot, data=food)
 glance(linear)$adj.r.squared
 ```
 This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
+
+However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data.  
+
 ```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
@@ -214,16 +219,30 @@ ggplot(res_aug, mapping = aes(x = .fitted, y = .resid)) +
   labs(x = "Recovery Rate", y = "Residuals")
 ```
 
-In this model, the residuals do not seem to be even distributed around 0. Therefore, perhaps there are some predictors of the outcome that we are not including in our model. 
+In this model, the residuals do not seem to be even distributed around 0. The graph of the model along the the adjusted r square value, suggest that we are perhaps some other predictors of the outcome that we are not including in our model. 
 
+## Linear model of correlation between dietary deviance and covid recovery rate accounting for income
 ```{r Linear_Model_with_income, echo = FALSE, warning=FALSE, message=FALSE}
 
 resincome <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviance_tot+income, data = food) 
+  fit(rec_rate ~ deviance_tot+income, data = food) %>% 
+  tidy () %>% 
+  print()
 
 reslinear<-lm(rec_rate~deviance_tot+income, data=food)
-glance(reslinear)$adj.r.squared
+glance(reslinear)$adj.r.squared %>% 
+  print()
+```
+
+In this model, we cannot reject the null hypothesis that there is no relationship between covid recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviance total constant. 
+
+Furthermore, this model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
+
+```{r Linear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+resincome <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviance_tot+income, data = food) 
 
 resincome_aug <-augment(resincome$fit)
 
@@ -233,7 +252,7 @@ ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
   labs(x = "Recovery Rate", y = "Residuals")
 
 ```
-This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
+This graph also indicates that the model that includes income as well as dietary deviance is a better predictor of covid outcomes than a model that solely relies on dietary deviance. The residuals are more evenly spread along 0. 
 
 SUMMARY
 
