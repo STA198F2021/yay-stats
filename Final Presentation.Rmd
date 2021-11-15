@@ -37,8 +37,9 @@ Messina G., et al. Functional Role of Dietary Intervention to Improve the Outcom
 Onishi J., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4).
 
 # Exploratory Data Analysis
+## Food Group Visualizations
 
-```{r make_food_categories, echo = FALSE, warning=FALSE}
+```{r make_food_categories, message=FALSE, echo = FALSE, warning=FALSE}
 food <- food %>% 
   mutate(Grains = `Cereals - Excluding Beer` + `Starchy Roots`) %>% 
   mutate(Vegetables2 = Pulses + `Vegetal Products` + Vegetables) %>% 
@@ -51,7 +52,7 @@ food <- food %>%
 
 Our dataset included more specific dietary composition than the USDA values. Therefore, to be able to compare them, we grouped the datasets into broader dietary categories including grains, vegetables, fruits, fats, proteins, and a general miscellaneous category. We did so by reading the descriptions of what composes each variable in the dataset. 
 
-```{r countries-mean-graph, echo = FALSE, warning=FALSE}
+```{r countries-mean-graph, message=FALSE, echo = FALSE, warning=FALSE}
 
 meanfood <- food %>%
   summarize(Group = "Countries", meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
@@ -65,7 +66,7 @@ meanfood %>%
 
 We were then curious to see if the mean percentages of the dietary categories of countries generally aligned with the USDA values. This helps inform us if we are making a valid comparison between the data and USDA values for the duration of the project. In order to do so we calculated the means of each of the values and added an additional column with the USDA values before plotting the bar graph. As shown, the values for grains, proteins, and vegetables are comparable to the USDA values indicating that our grouping of variables likely successfully captured the majority of dietary groups belonging to the broader categories. The value for fruits is significantly lower indicating that either the dataset does not accurately capture fruit consumption or countries on average eat significantly less fruit than recommended by the USDA. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group significantly represented in our data set.
   
-```{r countries, echo = FALSE, warning=FALSE}
+```{r countries, echo = FALSE, warning=FALSE, message=FALSE}
 food <- food %>% #grouping each country by their income classification group
   mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau", "Korea, Dem. People's Rep", "Liberia", "Madagascar", "Malawi", "Mali", "Mozambique", "Rwanda", "Sierra Leone", "Sudan", "Togo", "Uganda", "Yemen"),"LIC", 
                          ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti", "Honduras", "India", "Indonesia", "Iran (Islamic Republic of)", "Kenya", "Kiribati", "Kyrgyzstan", "Lao People's Democratic Republic", "Lesotho", "Mauritania", "Mongolia", "Morocco", "Myanmar", "Nepal", "Nicaragua", "Niger", "Nigeria", "	
@@ -78,7 +79,7 @@ Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "R
 One of the major confounding factors to consider in both dietary consumption as well as COVID-19 outcomes is income. Since some foods such as grains are typically cheaper than others such as proteins, income could play a significant role as a confounding factor. In order to account for this discrepancy we created a new income variable and classified each country according to their World Bank income status. HIC refers to high income countries, UMIC refers to upper middle income countries, LMIC refers to lower middle income countries, and LIC refers to low income countries.
 
 
-```{r comparing_dietary_means_to_USDA, echo = FALSE, warning=FALSE}
+```{r comparing_dietary_means_to_USDA, message=FALSE, echo = FALSE, warning=FALSE}
 meanfoodincome <- food %>%
   group_by(income) %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
@@ -93,41 +94,43 @@ meanfoodincome %>%
 ```
 In this graph, we summarized the break down of diet by income country in comparison to the  recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. This graph suggests that in our analysis we should in fact include income level as a possible predictor of COVID outcomes since countries seem to show trends in their nutrition in most categories by income level. 
 
-```{r, ANOVA_grains, echo=FALSE, warning=FALSE}
+## Food Group Data Analysis
+```{r, ANOVA_grains, echo=FALSE,message=FALSE, warning=FALSE}
 summary(aov(Grains~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from grains among income groups. Our p value is <<0.001.
-```{r, ANOVA_veg, echo=FALSE, warning=FALSE}
+```{r, ANOVA_veg, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Vegetables2~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from vegetables among income groups. Our p value is <<0.001.
-```{r, ANOVA_Fruit, echo=FALSE, warning=FALSE}
+```{r, ANOVA_Fruit, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Fruits~income,data=food))
 ```
 There are no significant differences in percent of diet that comes from fruit among income groups. Our p value is great than 0.05.
-```{r, ANOVA_Fats, echo=FALSE, warning=FALSE}
+```{r, ANOVA_Fats, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Fats~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from fats among income groups. Our p value is <<0.001.
-```{r, ANOVA_Protein, echo=FALSE, warning=FALSE}
+```{r, ANOVA_Protein, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Protein~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from proteins among income groups. Our p value is <<0.001.
-```{r, ANOVA_alc, echo=FALSE, warning=FALSE}
+```{r, ANOVA_alc, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(`Alcohol/Stimulants`~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from Alchogol/Stimulants among income groups. Our p value is <<0.001.
-```{r, ANOVA_obesity, echo=FALSE, warning=FALSE}
+```{r, ANOVA_obesity, echo=FALSE, warning=FALSE, message=FALSE}
 summary(aov(Obesity~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of the population that is obese among income groups. Our p value is <<0.001.
-```{r, ANOVA_malnourish, echo=FALSE, warning=FALSE}
+```{r, ANOVA_malnourish, echo=FALSE, warning=FALSE,message=FALSE}
 food <- food %>% 
   mutate(Malnourish= ifelse(Undernourished=="<2.5",2.5,Undernourished))
 summary(aov(Malnourish~income, data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of the population that is malnourished among income groups. Our p value is <<0.001.
 
+## Recovery Rate Visualizations
 ```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7, warning=FALSE}
 food <- food %>%
   mutate(rec_rate=Recovered/Confirmed) %>% 
@@ -142,12 +145,14 @@ by Country Income Status")
 ```
 In order to further our analysis, we created a variable that quantifies the COVID recovery rate for each country for comparison. We did this by dividing the percentage people in a country that recovered from COVID over the percentage of total people in that country that were confirmed COVID cases to obtain a rate of what percentage of people in that country that had COVID were able to recover. We also explored if income had an effect on percent recovery for COVID. High income countries hypothetically might have more resources to be able to provide better care for their citizens and improve their recovery rate. However, according to the boxplot, countries in the 4 income groups seem to have comparable recovery rates with the median for UMIC actually being the highest by a slight margin. Furthermore, the HIC group has numerous outliers near around 0.3 which might be important to consider. This seemed unusual to us due to the nature of disease and the resources the countries have. We speculate that more serious cases might be reported at disproportionately higher rates or there might potentially be other sources of error in the data set that we will later discuss. 
 
-```{r anova_for_rec_rate_and_income,echo = FALSE, warning=FALSE}
+## Recovery Rate Analysis
+```{r anova_for_rec_rate_and_income,echo = FALSE, message=FALSE, warning=FALSE}
 summary(aov(rec_rate~income,data=food))
 ```
 Based on the graphs, we wanted to see whether the mean recovery rate were significantly different between any of the income categories. ANOVA depends on variation between groups/within groups. From our graphs we can see that there is a decent amount of variation in recovery rate within each income category. This is probably due to the fact that these categories are very broad and there is different medical care/amount of COVID cases in each country even within income groups. However, the results of the ANOVA are not significant so therefore we cannot reject the null hypothesis that there are no significant differences due to income in recovery rate from COVID-19.
 
-```{r creating_deviation_varibles, echo = FALSE, warning=FALSE}
+## Dietary Deviation Variable Creation
+```{r creating_deviation_varibles, echo = FALSE, message=FALSE, warning=FALSE}
 food <- food %>% 
   mutate(deviance_grains = (30 - Grains)^2) %>% 
   mutate(deviance_veg = (40 - Vegetables2)^2) %>% 
@@ -158,7 +163,8 @@ food <- food %>%
 ```
 We created a variable for how much the average diet in each country differs from the suggested USDA value. We did so by subtract the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create deviance total variable. We squared them to account for negative values if the average diet was less than the USDA value for a certain category as well as increase the spread of deviance values for better comparison and visualization.
 
-```{r graphs_of_deviance_vs_recovery rate, echo = FALSE, warning=FALSE}
+# Methodology and Results
+```{r graphs_of_deviance_vs_recovery rate, message=FALSE, echo = FALSE, warning=FALSE}
 food %>% 
   filter(deviance_tot<750) %>% 
 ggplot(aes(x = deviance_tot, y = rec_rate)) +
@@ -185,7 +191,7 @@ To further look at this relationship, we compared this relationship by income le
 
 WHY?
 
-```{r Linear_Model, echo = FALSE, warning=FALSE}
+```{r Linear_Model, echo = FALSE, warning=FALSE, message=FALSE,}
 res <- linear_reg() %>%
   set_engine("lm") %>%
   fit(rec_rate ~ deviance_tot, data = food) %>% 
