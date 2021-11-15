@@ -191,12 +191,47 @@ To further look at this relationship, we compared this relationship by income le
 
 WHY?
 
-```{r Linear_Model, echo = FALSE, warning=FALSE, message=FALSE,}
+```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
   fit(rec_rate ~ deviance_tot, data = food) %>% 
-  tidy() %>% 
-  print()
+  tidy() 
+
+linear<-lm(rec_rate~deviance_tot, data=food)
+glance(linear)$adj.r.squared
+```
+This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
+```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+res <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviance_tot, data = food) 
+
+res_aug <-augment(res$fit)
+
+ggplot(res_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Recovery Rate", y = "Residuals")
+```
+
+In this model, the residuals do not seem to be even distributed around 0. Therefore, perhaps there are some predictors of the outcome that we are not including in our model. 
+
+```{r Linear_Model_with_income, echo = FALSE, warning=FALSE, message=FALSE}
+
+resincome <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviance_tot+income, data = food) 
+
+reslinear<-lm(rec_rate~deviance_tot+income, data=food)
+glance(reslinear)$adj.r.squared
+
+resincome_aug <-augment(resincome$fit)
+
+ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Recovery Rate", y = "Residuals")
+
 ```
 This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
 
