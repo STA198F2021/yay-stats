@@ -24,7 +24,7 @@ food <- readr::read_csv("data/Food_Supply_kcal_Data.csv")
 
 We are interested in looking at the relationship between COVID-19 outcomes and nutrition worldwide. The USDA Center for Nutrition Policy and Promotion suggests a dietary intake which consists of 30% grains, 40% vegetable, 10% fruits, and 20% proteins (dietaryguidlines.gov). Previous studies demonstrate an increased mortality in patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension.
   
-The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020). Furthermore, previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020). Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020). We are ultimately interested in seeing if countries that tend to consume similar diets to those suggested by the USDA show decreased rates of mortality from COVID-19 and how it/if it is related to income levels. We also explored each nutritional group in isolation as well as alcohol consumption, fat consumption, obesity, and undernourishment to analyze if there was a significant correlation with COVID recovery rates across countries. 
+The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020). Furthermore, previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020). Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020). We are ultimately interested in seeing if countries that tend to consume similar diets to those suggested by the USDA show decreased rates of mortality from COVID-19 and how it/if it is related to income levels. We also explored each nutritional group in isolation as well as alcohol consumption and fat consumption to analyze if there was a significant correlation with COVID recovery rates across countries. 
 
 This dataset, “COVID-19 Healthy Diet Dataset” comes from Kaggle. The dataset provides energy intake (kcal) as percentages of total diet by food group. In addition, it provides percentages of obesity and undernourished individuals. Finally it provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries. The food supply quantities in addition to the prevalence of obesity and undernourishment in the populations were obtained from the Food and Agricultural Organization of the United Nations, the population count was taken from the Population Reference Bureau, and the Johns Hopkins Center for Systems Science and Engineering was used for COVID-19 data and all data was last updated in February of 2021. The Food and Agricultural Organization of the United Nations as well as the Johns Hopkins Center for Systems Science and Engineering did not specify the methodology used to collect their data. In addition, data on the income group classification of each country was obtained from the World Bank. 
 
@@ -119,16 +119,6 @@ Using the overall F test, we identified a significant difference in percent of d
 summary(aov(`Alcohol/Stimulants`~income,data=food))
 ```
 Using the overall F test, we identified a significant difference in percent of diet that comes from Alchogol/Stimulants among income groups. Our p value is <<0.001.
-```{r, ANOVA_obesity, echo=FALSE, warning=FALSE, message=FALSE}
-summary(aov(Obesity~income,data=food))
-```
-Using the overall F test, we identified a significant difference in percent of the population that is obese among income groups. Our p value is <<0.001.
-```{r, ANOVA_malnourish, echo=FALSE, warning=FALSE,message=FALSE}
-food <- food %>% 
-  mutate(Malnourish= ifelse(Undernourished=="<2.5",2.5,Undernourished))
-summary(aov(Malnourish~income, data=food))
-```
-Using the overall F test, we identified a significant difference in percent of the population that is malnourished among income groups. Our p value is <<0.001.
 
 ## Recovery Rate Visualizations
 ```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7, warning=FALSE}
