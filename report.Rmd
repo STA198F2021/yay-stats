@@ -39,6 +39,7 @@ Onishi J., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome 
 # Exploratory Data Analysis
 ## Food Group Visualizations
 
+
 ```{r make_food_categories, message=FALSE, echo = FALSE, warning=FALSE}
 food <- food %>% 
   mutate(Grains = `Cereals - Excluding Beer` + `Starchy Roots`) %>% 
@@ -50,7 +51,9 @@ food <- food %>%
   mutate(Other = `Aquatic Products, Other` + Miscellaneous + Spices + `Sugar Crops` + `Sugar & Sweeteners`)
 ```
 
+
 Our dataset included more specific dietary composition than the USDA values. Therefore, to be able to compare them, we grouped the datasets into broader dietary categories including grains, vegetables, fruits, fats, proteins, and a general miscellaneous category. We did so by reading the descriptions of what composes each variable in the dataset. 
+
 
 ```{r countries-mean-graph, message=FALSE, echo = FALSE, warning=FALSE}
 
@@ -64,6 +67,7 @@ meanfood %>%
 
 ```
 
+
 We were then curious to see if the mean percentages of the dietary categories of countries generally aligned with the USDA values. This helps inform us if we are making a valid comparison between the data and USDA values for the duration of the project. In order to do so we calculated the means of each of the values and added an additional column with the USDA values before plotting the bar graph. As shown, the values for grains, proteins, and vegetables are comparable to the USDA values indicating that our grouping of variables likely successfully captured the majority of dietary groups belonging to the broader categories. The value for fruits is significantly lower indicating that either the dataset does not accurately capture fruit consumption or countries on average eat significantly less fruit than recommended by the USDA. Furthermore, while USDA does not provide a value for suggested fat, it is a nutritional group significantly represented in our data set.
   
 ```{r countries, echo = FALSE, warning=FALSE, message=FALSE}
@@ -75,6 +79,7 @@ Pakistan", "Samoa", "Sao Tome and Principe", "Senegal", "Solomon Islands","Sri L
 Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "Russian Federation", "Saint Lucia", "Saint Vincent and the Grenadines", "Serbia", "Senegal", "South Africa", "Thailand", "Turkey", "Turkmenistan", "Venezuela (Bolivarian Republic of)"),
              "UMIC", "HIC"))))
 ```
+
 
 One of the major factors to consider in both dietary consumption as well as COVID-19 outcomes is income. Since some foods such as grains are typically cheaper than others such as proteins, income could play a significant role as a potential confounding factor. In order to account for this discrepancy we created a new income variable and classified each country according to their World Bank income status. HIC refers to high income countries, UMIC refers to upper middle income countries, LMIC refers to lower middle income countries, and LIC refers to low income countries.
 
@@ -92,34 +97,41 @@ meanfoodincome %>%
             "LIC", "USDA")) %>%
   ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
+
 In this graph, we summarized the break down of diet by income country in comparison to the  recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. This graph suggests that in our analysis we should in fact include income level as a possible predictor of COVID outcomes since countries seem to show trends in their nutrition in most categories by income level. 
 
 ## Food Group Data Analysis
 ```{r, ANOVA_grains, echo=FALSE,message=FALSE, warning=FALSE}
 summary(aov(Grains~income,data=food))
 ```
+
 Using the overall F test, we identified a significant difference in percent of diet that comes from grains among income groups. Our p value is <<0.001.
 
 ```{r, ANOVA_veg, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Vegetables2~income,data=food))
 ```
+
 Using the overall F test, we identified a significant difference in percent of diet that comes from vegetables among income groups. Our p value is <<0.001.
 ```{r, ANOVA_Fruit, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Fruits~income,data=food))
 ```
+
 There are no significant differences in percent of diet that comes from fruit among income groups. Our p value is great than 0.05.
 ```{r, ANOVA_Fats, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Fats~income,data=food))
 ```
+
 Using the overall F test, we identified a significant difference in percent of diet that comes from fats among income groups. Our p value is <<0.001.
 ```{r, ANOVA_Protein, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(Protein~income,data=food))
 ```
+
 Using the overall F test, we identified a significant difference in percent of diet that comes from proteins among income groups. Our p value is <<0.001.
 ```{r, ANOVA_alc, echo=FALSE, message=FALSE, warning=FALSE}
 summary(aov(`Alcohol/Stimulants`~income,data=food))
 ```
-Using the overall F test, we identified a significant difference in percent of diet that comes from Alchogol/Stimulants among income groups. Our p value is <<0.001.
+
+Using the overall F test, we identified a significant difference in percent of diet that comes from alcohol/stimulants among income groups. Our p value is <<0.001.
 
 ## Recovery Rate Visualizations
 ```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7, warning=FALSE}
@@ -134,12 +146,14 @@ food %>%
   ggplot(aes(x = rec_rate, fill = income)) + geom_boxplot() + labs(y = NULL, x = "Percent Recovery for Confirmed COVID Cases", fill = "Income Status", title = "Boxplot Showing COVID Recovery Data Group 
 by Country Income Status")
 ```
+
 In order to further our analysis, we created a variable that quantifies the COVID recovery rate for each country for comparison. We did this by dividing the percentage people in a country that recovered from COVID over the percentage of total people in that country that were confirmed COVID cases and multiplying by 100 to obtain a rate of what percentage of people in that country that had COVID were able to recover. We also explored if income had an effect on percent recovery for COVID. High income countries hypothetically might have more resources to be able to provide better care for their citizens and improve their recovery rate. However, according to the boxplot, countries in the 4 income groups seem to have comparable recovery rates with the median for UMIC actually being the highest by a slight margin. Furthermore, the HIC group has numerous outliers near around 0.3 which might be important to consider. This seemed unusual to us due to the nature of disease and the resources the countries have. We speculate that more serious cases might be reported at disproportionately higher rates or there might potentially be other sources of error in the data set that we will later discuss. 
 
 ## Recovery Rate Analysis
 ```{r anova_for_rec_rate_and_income,echo = FALSE, message=FALSE, warning=FALSE}
 summary(aov(rec_rate~income,data=food))
 ```
+
 Based on the graphs, we wanted to see whether the mean recovery rate were significantly different between any of the income categories. ANOVA depends on variation between groups/within groups. From our graphs we can see that there is a decent amount of variation in recovery rate within each income category. This is probably due to the fact that these categories are very broad and there is different medical care/amount of COVID cases in each country even within income groups. However, the results of the ANOVA are not significant so therefore we cannot reject the null hypothesis that there are no significant differences due to income in recovery rate from COVID-19.
 
 ## Dietary Deviation Variable Creation
@@ -150,9 +164,11 @@ food <- food %>%
   mutate(deviation_fruit = (10 - Fruits)^2) %>% 
   mutate(deviation_protein = (20 - Protein)^2) %>% 
   mutate(deviation_tot = deviation_grains + deviation_protein + deviation_fruit + deviation_veg) %>% 
-  filter(rec_rate>0)
+  filter(rec_rate>0) %>% 
+  filter(deviation_tot < 750)
 ```
-We created a variable to quantify how much the average diet in each country differs from the suggested USDA value (This variable will be referred to as dietary deviation throughout the rest of this project). We did so by subtracting the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create total dietary deviation variable. We squared them to account for negative values if the average diet was less than the USDA value for a certain category as well as increase the spread of deviation values for better comparison and visualization.
+
+We created a variable to quantify how much the average diet in each country differs from the suggested USDA value (This variable will be referred to as dietary deviation throughout the rest of this project). We did so by subtracting the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create total dietary deviation variable. We squared them to account for negative values if the average diet was less than the USDA value for a certain category as well as increase the spread of deviation values for better comparison and visualization. We filtered the dietary deviation category to remove 1 country (Iceland) that lacked accurate data in one of the food categories according to the dataset and therefore resulted in a falsely high deviation value.
 
 # Methodology and Results
 
@@ -160,7 +176,7 @@ We created a variable to quantify how much the average diet in each country diff
 
 We used a linear regression model to see how COVID recovery rate is related to dietary deviation. We used a linear regression because both variables are continuous and quantitative.
 
-```{r graphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE}
+```{r graphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE, fig.height = 4, fig.width = 7}
 food %>% 
   filter(deviation_tot<750) %>% 
 ggplot(aes(x = deviation_tot, y = rec_rate)) +
@@ -190,11 +206,12 @@ linear<-lm(rec_rate~deviation_tot, data=food)
 glance(linear)$adj.r.squared
 ```
 
-This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.02 lower. 
 
-However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data.  
+This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.041 lower. 
 
-```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+However, the adjusted r squared value is quite low. It indicates that our model only accounts for 5% of the variance in the data.  
+
+```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE, fig.height = 4, fig.width = 7}
 res <- linear_reg() %>%
   set_engine("lm") %>%
   fit(rec_rate ~ deviation_tot, data = food) 
@@ -207,18 +224,12 @@ ggplot(res_aug, mapping = aes(x = .fitted, y = .resid)) +
   labs(x = "Recovery Rate", y = "Residuals", title = "Visualization of Residual Values")
 ```
 
+
 In this model, the residuals do not seem to be even distributed around 0. The graph of the model along the the adjusted r square value, suggest that we are perhaps some other predictors of the outcome that we are not including in our model. 
 
 To further explore the various dietary factors in isolation, we ran linear regression models comparing each of the USDA category deviation values as well as Fat and Alcohol consumption levels to COVID recovery rates. The only regression model that reached the level of statistical significance was that of grain deviation as shown below. 
 
-```{r Linear_Model_grains_with_income, echo = FALSE, warning=FALSE, message=FALSE}
-resincome <- linear_reg() %>%
-  set_engine("lm") %>%
-  fit(rec_rate ~ deviation_grains, data = food) %>% 
-  tidy () %>% 
-  print()
-```
-```{r graphs_of_deviation_vs_recovery_rate_grains, message=FALSE, echo = FALSE, warning=FALSE}
+```{r graphs_of_deviation_vs_recovery_rate_grains, message=FALSE, echo = FALSE, warning=FALSE,, fig.height = 4, fig.width = 7}
 food %>% 
   filter(deviation_tot<750) %>% 
 ggplot(aes(x = deviation_grains, y = rec_rate)) +
@@ -228,11 +239,20 @@ Suggested Dietary Intake of Grains",
     x = "Deviation from USDA suggested Grain Intake",
     y = "COVID-19 Recovery Rate")
 ```
-According to this model, as the deviation value for grains increases by 1 unit, COVID recovery rates decrease by 0.05%. This is more stronger relationship than total deviation and suggests that grain consumption could play a more consequential role than the other food groups explored.
+
+```{r Linear_Model_grains_with_income, echo = FALSE, warning=FALSE, message=FALSE}
+resincome <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_grains, data = food) %>% 
+  tidy () %>% 
+  print()
+```
+
+According to this model, as the deviation value for grains increases by 1 unit, COVID recovery rates decrease by 0.056%. This is a slightly stronger relationship than that of total deviation and suggests that grain consumption could play a more consequential role in COVID recovery rate than the other food groups explored.
 
 ## Linear model of correlation between dietary deviation and COVID recovery rate accounting for income
 
-```{r Linear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+```{r Linear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE, , fig.height = 4, fig.width = 7}
 food %>% 
   filter(deviation_tot<750) %>% 
 ggplot(aes(x = deviation_tot, y = rec_rate, color=income)) +
@@ -248,7 +268,7 @@ To further analyze this relationship, we compared by income level. Since the maj
 ```{r Linear_Model_with_income, echo = FALSE, warning=FALSE, message=FALSE}
 resincome <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviation_tot+income, data = food) %>% 
+  fit(rec_rate ~ deviation_tot*income, data = food) %>% 
   tidy () %>% 
   print()
 ```
@@ -256,16 +276,16 @@ resincome <- linear_reg() %>%
 The adjusted R^2 value for our model is: 
 
 ```{r Linear_Model_with_income_r2, echo = FALSE, warning=FALSE, message=FALSE}
-reslinear<-lm(rec_rate~deviation_tot+income, data=food)
+reslinear<-lm(rec_rate~deviation_tot*income, data=food)
 glance(reslinear)$adj.r.squared %>% 
 print()
 ```
 
-In this model, we cannot reject the null hypothesis that there is no relationship between COVID recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviation total constant. 
+This model shows that the slope for the reference group, HIC countries, has a value of -.07 meaning that in HIC as diet deviates from the USDA value by 1 unit, COVID recovery rate decreases by 0.07%. This value is significant with a p-value of 0.006. However, none of the other terms for income intercepts or interactions reach the level of statistical significance and therefore we fail to reject the null hypothesis that the value for the intercepts or slopes for the other income groups is the same as that of the reference group. 
 
-Furthermore, this model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
+Furthermore, this model has a slightly larger adjusted r squared value, (6.17% compared to 5.05%) indicated that it accounts for slightly more variance in the data than the first model that did not include income.
 
-```{r Linear_Model_with_income_graphres, echo = FALSE, warning=FALSE, message=FALSE}
+```{r Linear_Model_with_income_graphres, echo = FALSE, warning=FALSE, message=FALSE, , fig.height = 4, fig.width = 7}
 resincome <- linear_reg() %>%
   set_engine("lm") %>%
   fit(rec_rate ~ deviation_tot+income, data = food) 
@@ -277,17 +297,17 @@ ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
   geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
   labs(x = "Recovery Rate", y = "Residuals", title = "Visualization of Residual Values")
 ```
-This residual graph also indicates that the model that includes income as well as dietary deviation is a slightly better predictor of COVID outcomes than a model that solely relies on dietary deviation due to the improved distribution. We still see residuals clustering along the x-axis indicating that the are further predictors we did not account for. Furthermore, none of the individual dietary factors in isolation showed statistically significant differences in effect on COVID recovery by income.
+This residual graph also indicates that the model that includes income as well as dietary deviation is a slightly better predictor of COVID outcomes than a model that solely relies on dietary deviation due to the minimally improved distribution. We still see residuals clustering along the x-axis indicating that the are further predictors we did not account for. Furthermore, none of the individual dietary factors in isolation showed statistically significant differences in effect on COVID recovery by income.
 
 # Discussion and Conclusion
 
-The linear regression model does in fact show a significant relationship between COVID-19 recovery rate and dietary deviation from USDA suggested values, both overall and specifically for grains. While the value of that correlation is small, with a change of 0.02% in recovery rate per change in deviation dietary value, the burden of disease for COVID is massive and ongoing and even a small change in recovery rate has significant implications for human health. As shown, the linear regression model accounts for a very small percent of the variation in the data. We did not necessarily expect diet to account for a large portion of the variation in recovery rates since other health factors such as age and immune strength so even a small change is therefore meaningful. 
+The linear regression model does in fact show a significant relationship between COVID-19 recovery rate and dietary deviation from USDA suggested values, both overall and specifically for grains. While the value of that correlation is small, with a decrease of 0.04% in recovery rate per change in deviation dietary value, the burden of disease for COVID is massive and ongoing and even a small change in recovery rate has significant implications for human health. As shown, the linear regression model accounts for a very small percent of the variation in the data. Although income seems to mediate certain aspects of diet composition itself, it did not have a significant effect on the relationship between diet deviation and COVID recovery rate as shown by the linear regression model. In the linear model accounting for income however, the HIC countries did seem to show a stronger negative relationship between dietary deviation and COVID recovery rate which was potentially modulated due to the few HIC countries that have a significantly lower recovery rate than the rest of the dataset. Further studies should look into those values for those countries to see if they are true representations of recovery rate or the result of a source of error in reporting.
 
-Furthermore, these food group categories are very broad. The majority of the studies that compare diets to immune system function look at composition of specific proteins, amino acids, or vitamins rather than groups as broad as carbs, fruits, or vegetables. Moreover, even within a country, each individual consumes a very distinct diet. Therefore, it is difficult to make predictions or understand relationships when there is such variation across individuals and communities in a population. 
+Furthermore, these food group categories are very broad. The majority of the studies that compare diets to immune system function look at composition of specific proteins, amino acids, or vitamins rather than groups as broad as carbs, fruits, or vegetables. Moreover, even within a country, each individual consumes a very distinct diet. Therefore, it is difficult to make predictions or understand relationships when there is such variation across individuals and communities in a population. We also used broad classifications for income groups that do not account for how wealth was distributed within the country as well as other government policies/funding related to healthcare and nutrition. 
 
-However, this data might shed light on the fact that the USDA recommended diet is too broad to make targeted conclusions about the impact of diet on health. Future studies should look at diet in a more controlled environment where it is possible to track individual food consumption and its effects on their health and COVID outcomes.
+However, this data might shed light on the fact that the USDA recommended diet is too broad to make targeted conclusions about the impact of diet on health. Future studies should look at diet in a more controlled environment where it is possible to track individual food consumption and its effects on their health and COVID outcomes. 
 
-Another limitation of this study is that we did not control for vaccination rate or age. Fully vaccinated individuals have been shown to be on average 13.1 times less likely to die from COVID-19 (CDC 2020). Therefore, future studies should control for vaccination rates and age across each country and condition on them when creating other linear regression models.
+Another limitation of this study is that we did not control for vaccination rate, age, or immunocompromised status. Fully vaccinated individuals have been shown to be on average 13.1 times less likely to die from COVID-19 (CDC 2020). Therefore, future studies should control for vaccination rates, age, and general health across each country and condition on them when creating other linear regression models.
 
 Furthermore, because the pandemic is still ongoing, rates of COVID-19 infection, recovery, and deaths are still changing. The last time that the data was updated was in February of 2022. These rates should be updated with the latest data to have the most accurate results. 
 
