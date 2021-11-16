@@ -29,27 +29,30 @@ class: center, middle, inverse, title-slide
 
 
 
+
 class: inverse, middle, center
 
----
+
+
+class: inverse, left
 
 ## Research Question
 
-How does nutrition impact recovery from COVID-19 infections?
+###*How Does Nutrition Impact Recovery From COVID-19 Infections?*
 
 --
-### Why do we care?
+#### Why do we care?
 --
 
-- Previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020).
-
---
-
-- Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020).
+- Studies show that maintaining a healthy diet can **decrease risk of severe infection** by promoting the immune system (Messina et al. 2020, Iddir et. al 2020).
 
 --
 
-- There is an observed increase in mortality rates among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020).
+- Adequate **protein consumption** is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020).
+
+--
+
+- There is an observed **increase in mortality rates** among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be **correlated with an individual's diet** (Onishi 2020).
 
 ---
 
@@ -65,7 +68,7 @@ How does nutrition impact recovery from COVID-19 infections?
 
 --
 
-- Energy intake (kcal) as percentages of total diet by food group. 
+- Energy intake (kcal) as percentages of total diet energy intake by food group. 
 
 --
 
@@ -80,11 +83,11 @@ How does nutrition impact recovery from COVID-19 infections?
 
 --
 
-- We want to see if the dietary of breakdown of countries aligns with the USDA suggested values
+- We want to see if the dietary of breakdown of countries aligns with the USDA suggested values and if that relationship is mediated by income
 
 --
 
-- Whether deviation or adherance to this suggested breakdown impacts COVID-19 recovery rates
+- Then, we will analyze whether deviation from this suggested breakdown impacts COVID-19 recovery rates
 
 ---
 # Preliminary Visualizations
@@ -108,7 +111,7 @@ How does nutrition impact recovery from COVID-19 infections?
 --
 
 .footnote[
-Overall ANOVA tests indicate that at least one mean food group varies in each income group in all food groups except for Fruit
+ANOVA tests indicate that at least one mean food group varies across income groups in all diet categories except for Fruit
 
 ]
 
@@ -138,16 +141,16 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 
 ```
 ## # A tibble: 2 × 5
-##   term           estimate std.error statistic  p.value
-##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    0.886     0.0377       23.5  1.83e-53
-## 2 deviation_tot -0.000292  0.000123     -2.36 1.94e- 2
+##   term          estimate std.error statistic  p.value
+##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    91.7       4.00       22.9  5.43e-52
+## 2 deviation_tot  -0.0414    0.0135     -3.07 2.54e- 3
 ```
 --
 ## Adjusted R Squared
 
 ```
-## [1] 0.02800442
+## [1] 0.05055607
 ```
 
 --
@@ -176,10 +179,10 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 
 ```
 ## # A tibble: 2 × 5
-##   term           estimate std.error statistic  p.value
-##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    0.886     0.0377       23.5  1.83e-53
-## 2 deviation_tot -0.000292  0.000123     -2.36 1.94e- 2
+##   term          estimate std.error statistic  p.value
+##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    91.7       4.00       22.9  5.43e-52
+## 2 deviation_tot  -0.0414    0.0135     -3.07 2.54e- 3
 ```
 
 --
@@ -187,14 +190,17 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 #### Linear Regression Model with income
 
 ```
-## # A tibble: 5 × 5
-##   term           estimate std.error statistic  p.value
-##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    0.813     0.0519      15.6   1.05e-33
-## 2 deviation_tot -0.000209  0.000133    -1.56  1.20e- 1
-## 3 incomeLIC      0.0328    0.0547       0.599 5.50e- 1
-## 4 incomeLMIC     0.0774    0.0426       1.82  7.10e- 2
-## 5 incomeUMIC     0.0830    0.0453       1.83  6.89e- 2
+## # A tibble: 8 × 5
+##   term                     estimate std.error statistic  p.value
+##   &lt;chr&gt;                       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)               96.0       8.38      11.5   2.95e-22
+## 2 deviation_tot             -0.0720    0.0258    -2.79  5.88e- 3
+## 3 incomeLIC                -17.3      16.0       -1.08  2.82e- 1
+## 4 incomeLMIC                -7.59     11.1       -0.685 4.94e- 1
+## 5 incomeUMIC                -5.65     11.8       -0.479 6.33e- 1
+## 6 deviation_tot:incomeLIC    0.0687    0.0462     1.49  1.39e- 1
+## 7 deviation_tot:incomeLMIC   0.0534    0.0350     1.53  1.29e- 1
+## 8 deviation_tot:incomeUMIC   0.0474    0.0466     1.02  3.11e- 1
 ```
 
 --
@@ -225,7 +231,7 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 #### Adjusted R Squared without income
 
 ```
-## [1] 0.02800442
+## [1] 0.05055607
 ```
 ]
 
@@ -236,7 +242,7 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 #### Adjusted R Squared with income
 
 ```
-## [1] 0.03726604
+## [1] 0.06169532
 ```
 ]
 
