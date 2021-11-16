@@ -48,43 +48,127 @@ style_xaringan(
 
 class: inverse, middle, center
 
-# Using xaringan
 
----
 
-## xaringan
+## Research Question
 
-- The presentation is created using the `xaringan` package
+How does nutrition impact recovery from COVID-19 infections?
 
-- Use `---` to separate slides and `--` for incremental builds
+--
+### Why do we care?
+--
+
+- Previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020).
 
 --
 
-- Like this
+- Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020).
+
+--
+
+- There is an observed increase in mortality rates among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020).
 
 ---
 
-## Layouts
+## Source and Analysis Plan
 
-You can use plain text
+--
 
-- or bullet points
+### Dataset:
+
+--
+
+- "COVID-19 Healthy Diet Dataset” comes from Kaggle. 
+
+--
+
+- Energy intake (kcal) as percentages of total diet by food group. 
+
+--
+
+- Provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries.
+
+--
+
+### Analysis Plan:
+
+--
+- The USDA Center for Nutrition Policy and Promotion suggests a dietary intake which consists of 30% grains, 40% vegetable, 10% fruits, and 20% proteins
+
+--
+
+- We want to see if the dietary of breakdown of countries aligns with the USDA suggested values
+
+--
+
+- Whether deviation or adherance to this suggested breakdown impacts COVID-19 recovery rates
+
+---
+# Preliminary Visualizations
+
+```{r make_food_categories, message=FALSE, echo = FALSE, warning=FALSE}
+food <- food %>% 
+  mutate(Grains = `Cereals - Excluding Beer` + `Starchy Roots`) %>% 
+  mutate(Vegetables2 = Pulses + `Vegetal Products` + Vegetables) %>% 
+  mutate(Fruits = `Fruits - Excluding Wine`) %>% 
+  mutate(Fats = `Animal fats` + Oilcrops + Treenuts + `Vegetable Oils`) %>% 
+  mutate(Protein = `Animal Products` + Eggs + `Fish, Seafood` + Meat + `Milk - Excluding Butter` + Offals) %>% 
+  mutate('Alcohol/Stimulants' = `Alcoholic Beverages` + Stimulants) %>% 
+  mutate(Other = `Aquatic Products, Other` + Miscellaneous + Spices + `Sugar Crops` + `Sugar & Sweeteners`)
+```
+
+--
 
 .pull-left[
-or text in two columns $^*$
+```{r countries-mean-graph, message=FALSE, echo = FALSE, warning=FALSE}
+
+meanfood <- food %>%
+  summarize(Group = "Countries", meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
+ add_row(Group = "USDA", meangrains=30, meanveg=40, meanfruit=10, meanprotein=20) %>% 
+    pivot_longer(cols=meangrains:meanother, names_to = "Means", values_to = "PercentDiet")
+
+meanfood %>%
+  ggplot(aes(x=Means, y=PercentDiet, fill=Group))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Avergae Diet Make up by Food Group", subtitle="Compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+
+```
 ]
+
+```{r countries, echo = FALSE, warning=FALSE, message=FALSE}
+food <- food %>% #grouping each country by their income classification group
+  mutate(income = ifelse(Country %in% c("Afghanistan","Burkina Faso", "Central African Republic", "Chad", "Congo", "Ethiopia", "Gambia", "Guinea", "Guinea-Bissau", "Korea, Dem. People's Rep", "Liberia", "Madagascar", "Malawi", "Mali", "Mozambique", "Rwanda", "Sierra Leone", "Sudan", "Togo", "Uganda", "Yemen"),"LIC", 
+                         ifelse(Country %in% c("Algeria","Angola","Bangladesh", "Belize", "Benin", "Bolivia", "Cabo Verde", "Cambodia", "Cameroon", "Cote d'Ivoire", "Djibouti", "Egypt", "El Salvador", "Eswatini", "Ghana", "Haiti", "Honduras", "India", "Indonesia", "Iran (Islamic Republic of)", "Kenya", "Kiribati", "Kyrgyzstan", "Lao People's Democratic Republic", "Lesotho", "Mauritania", "Mongolia", "Morocco", "Myanmar", "Nepal", "Nicaragua", "Niger", "Nigeria", "	
+Pakistan", "Samoa", "Sao Tome and Principe", "Senegal", "Solomon Islands","Sri Lanka", "Suriname", "Tajikistan", "Timor-Leste", "Tunisia", "Ukraine", "United Republic of Tanzania", "Uzbekistan", "Vanuatu", "Vietnam", "Zambia", "Zimbabwe"), "LMIC", 
+                         ifelse(Country %in% c("Albania","Argentina","Armenia","Azerbaijan", "Belarus","Bosnia and Herzegovina", "Botswana", "Brazil", "Bulgaria", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Lebanon", "Malaysia", "Maldives", "Mauritius", "Mexico", "Montenegro","Namibia", "North Macedonia", "	
+Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "Russian Federation", "Saint Lucia", "Saint Vincent and the Grenadines", "Serbia", "Senegal", "South Africa", "Thailand", "Turkey", "Turkmenistan", "Venezuela (Bolivarian Republic of)"),
+             "UMIC", "HIC"))))
+```
+
+--
+
 .pull-right[
-- like
-- this
+```{r comparing_dietary_means_to_USDA, message=FALSE, echo = FALSE, warning=FALSE}
+meanfoodincome <- food %>%
+  group_by(income) %>%
+  summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
+  add_row(income="USDA", meangrains=30, meanveg=40, meanfruit=10, meanprotein=20) %>% 
+  pivot_longer(cols=meangrains:meanother, names_to = "Means", values_to = "PercentDiet") 
+
+meanfoodincome %>%
+  mutate(income = fct_relevel(income, 
+            "HIC", "UMIC", "LMIC", 
+            "LIC", "USDA")) %>%
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+```
 ]
 
 .footnote[
-[*] And add footnotes
+Overall ANOVA tests indicate that at least one mean food group varies in each income group in all food groups except for Fruit
+
 ]
 
 ---
 
-## Code
+## Recovery Rate
 
 ```{r boring-regression}
 # a boring regression

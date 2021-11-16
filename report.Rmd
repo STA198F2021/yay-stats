@@ -257,6 +257,15 @@ ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
 ```
 This graph also indicates that the model that includes income as well as dietary deviation is a slightly better predictor of COVID outcomes than a model that solely relies on dietary deviation. 
 
-SUMMARY
+# Discussion and Conclusion
 
-CONCLUSIONS
+While the linear regression does show a significant relationship between COVID-19 recovery rate and dietary deviation, the linear regression model accounts for a very small percent of the variation in the data. Ultimately, these food group categories are very broad. The majority of the studies that compare diets to immune system function look at composition of specific proteins, amino acids, or vitamins rather than groups as broad as carbs, fruits, or vegetables. Moreover, even within a country, each individual consumes a very distinct diet. Therefore, it is difficult to make predictions or understand relationships when there is such variation across individuals in a population.
+
+However, this data might shed light on the fact that the USDA recommended diet is far too broad to actually impact someone’s health. Future studies should look at diet in a more controlled environment where it is possible to track an individual's food consumption.
+
+Another limitation of this study is that we did not control for vaccination rates. Fully vaccinated individuals have been shown to be on average 13.1 times less likely to die from COVID-19 (CDC 2020). Therefore, future studies should control for vaccination rates across each country and condition on them when creating other linear regression models.
+
+Furthermore, because the pandemic is still ongoing, rates of COVID-19 infection, recovery, and deaths are still changing. The last time that the data was updated was in February of 2022. These rates should be updated with the latest data to have the most accurate results. 
+
+Works Cited:
+CDC. (2020, March 28). COVID Data Tracker. Centers for Disease Control and Prevention. https://covid.cdc.gov/covid-data-tracker
