@@ -242,11 +242,11 @@ glance(linear)$adj.r.squared %>%
 
 --
 
-- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.0002 lower.
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.04 lower.
 
 --
 
-- However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data. 
+- However, the adjusted r squared value is quite low. It indicates that our model only accounts for 5% of the variance in the data. 
 ---
 ### Linear Regression Conditioning Income and Dietary Deviation
 
@@ -299,11 +299,13 @@ resincome <- linear_reg() %>%
 
 --
 
-- We cannot reject the null hypothesis that there is no relationship between COVID recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. 
-
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate, conditioning on the other variables in the model, since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 7% lower. 
 --
 
-- However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviation total constant. 
+- We fail to reject the null hypothesis that the value for
+the intercepts or slopes for the other income groups is the same as that of the reference group.
+
+
 
 ---
 ## Comparing Models
@@ -365,7 +367,9 @@ glance(reslinear)$adj.r.squared %>%
 ]
 
 
-- This model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
+--
+
+- This model has a slightly larger adjusted r squared value, (6.17% compared to 5.05%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
 
 ---
 # Discussion
