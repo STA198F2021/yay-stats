@@ -144,62 +144,55 @@ Based on the graphs, we wanted to see whether the mean recovery rate were signif
 ## Dietary Deviation Variable Creation
 ```{r creating_deviation_varibles, echo = FALSE, message=FALSE, warning=FALSE}
 food <- food %>% 
-  mutate(deviance_grains = (30 - Grains)^2) %>% 
-  mutate(deviance_veg = (40 - Vegetables2)^2) %>% 
-  mutate(deviance_fruit = (10 - Fruits)^2) %>% 
-  mutate(deviance_protein = (20 - Protein)^2) %>% 
-  mutate(deviance_tot = deviance_grains + deviance_protein + deviance_fruit + deviance_veg) %>% 
+  mutate(deviation_grains = (30 - Grains)^2) %>% 
+  mutate(deviation_veg = (40 - Vegetables2)^2) %>% 
+  mutate(deviation_fruit = (10 - Fruits)^2) %>% 
+  mutate(deviation_protein = (20 - Protein)^2) %>% 
+  mutate(deviation_tot = deviation_grains + deviation_protein + deviation_fruit + deviation_veg) %>% 
   filter(rec_rate>0)
 ```
-We created a variable for how much the average diet in each country differs from the suggested USDA value. We did so by subtract the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create deviance total variable. We squared them to account for negative values if the average diet was less than the USDA value for a certain category as well as increase the spread of deviance values for better comparison and visualization.
+We created a variable to quantify  how much the average diet in each country differs from the suggested USDA value (This variable will be referred to as dietary deviation throughout the rest of this project). We did so by subtracting the mean value from each food group from the USDA value and then squaring that value. We then summed up this value from each food group to create total dietary deviation variable. We squared them to account for negative values if the average diet was less than the USDA value for a certain category as well as increase the spread of deviation values for better comparison and visualization.
 
 # Methodology and Results
-```{r graphs_of_deviance_vs_recovery rate, message=FALSE, echo = FALSE, warning=FALSE}
+
+## Linear model of correlation between dietary deviation and covid recovery rate
+
+We used a linear regression model to see how covid recovery rate is related to dietary deviation. We used a linear regression because both variables are continuous and quantitative. 
+```{r graphs_of_deviation_vs_recovery rate, message=FALSE, echo = FALSE, warning=FALSE}
 food %>% 
-  filter(deviance_tot<750) %>% 
-ggplot(aes(x = deviance_tot, y = rec_rate)) +
+  filter(deviation_tot<750) %>% 
+ggplot(aes(x = deviation_tot, y = rec_rate)) +
   geom_point()+geom_smooth(method="lm") + labs(
     title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
     subtitle="linear model by income category",
     x = "Deviation from USDA suggested diet",
     y = "COVID-19 Recovery Rate")
 
-food %>% 
-  filter(deviance_tot<750) %>% 
-ggplot(aes(x = deviance_tot, y = rec_rate, color=income)) +
-  geom_point()+geom_smooth(method="lm", se = FALSE) + labs(
-    title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
-    x = "Deviation from USDA suggested diet",
-    y = "COVID-19 Recovery Rate")
 
 ```
 Here we compared the relationship between deviation from USDA suggested intake with recovery rates from COVID-19. The recovery rates were calculated by calculated the percent of the population that recovered from COVID-19 with the percent of the population that was diagnosed with COVID-19.
 
-In the first graph, we see that there is a negative correlation between recovery rates and deviation from USDA suggested dietary intake. This suggests that as ones dietary intake begins to differ from the USDA suggested intake, they on average seem to have a lower change of recovering from COVID-19.
+In the  graph, we see that there is a negative correlation between recovery rates and deviation from USDA suggested dietary intake. This suggests that as ones dietary intake begins to differ from the USDA suggested intake, they on average seem to have a lower change of recovering from COVID-19.
 
-To further look at this relationship, we compared this relationship by income level. We can see that while lower middle income and upper middle income countries have a slighty negative relationship, lower income countries almost show no relationship between deviation rate and recovery rate. In contrast, high income countries show the strongest correlation between deviation rate and recovery rate. 
 
-WHY?
-
-## Linear model of correlation between dietary deviance and covid recovery rate
 ```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviance_tot, data = food) %>% 
+  fit(rec_rate ~ deviation_tot, data = food) %>% 
   tidy() %>% 
   print ()
 
-linear<-lm(rec_rate~deviance_tot, data=food)
+linear<-lm(rec_rate~deviation_tot, data=food)
 glance(linear)$adj.r.squared
 ```
-This linear model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviance rate, the chances of recovering are on average 0.0002 lower. 
+This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.0002 lower. 
 
 However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data.  
 
 ```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviance_tot, data = food) 
+  fit(rec_rate ~ deviation_tot, data = food) 
 
 res_aug <-augment(res$fit)
 
@@ -211,28 +204,42 @@ ggplot(res_aug, mapping = aes(x = .fitted, y = .resid)) +
 
 In this model, the residuals do not seem to be even distributed around 0. The graph of the model along the the adjusted r square value, suggest that we are perhaps some other predictors of the outcome that we are not including in our model. 
 
-## Linear model of correlation between dietary deviance and covid recovery rate accounting for income
+## Linear model of correlation between dietary deviation and covid recovery rate accounting for income
+
+
+```{r Linear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+food %>% 
+  filter(deviation_tot<750) %>% 
+ggplot(aes(x = deviation_tot, y = rec_rate, color=income)) +
+  geom_point()+geom_smooth(method="lm", se = FALSE) + labs(
+    title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
+    x = "Deviation from USDA suggested diet",
+    y = "COVID-19 Recovery Rate")
+```
+
+To further look at this relationship, we compared this relationship by income level. We can see that while lower middle income and upper middle income countries have a slighty negative relationship, lower income countries almost show no relationship between deviation rate and recovery rate. In contrast, high income countries show the strongest correlation between deviation rate and recovery rate. 
+
 ```{r Linear_Model_with_income, echo = FALSE, warning=FALSE, message=FALSE}
 
 resincome <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviance_tot+income, data = food) %>% 
+  fit(rec_rate ~ deviation_tot+income, data = food) %>% 
   tidy () %>% 
   print()
 
-reslinear<-lm(rec_rate~deviance_tot+income, data=food)
+reslinear<-lm(rec_rate~deviation_tot+income, data=food)
 glance(reslinear)$adj.r.squared %>% 
   print()
 ```
 
-In this model, we cannot reject the null hypothesis that there is no relationship between covid recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviance total constant. 
+In this model, we cannot reject the null hypothesis that there is no relationship between covid recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviation total constant. 
 
 Furthermore, this model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
 
-```{r Linear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+```{r Linear_Model_with_income_graphres, echo = FALSE, warning=FALSE, message=FALSE}
 resincome <- linear_reg() %>%
   set_engine("lm") %>%
-  fit(rec_rate ~ deviance_tot+income, data = food) 
+  fit(rec_rate ~ deviation_tot+income, data = food) 
 
 resincome_aug <-augment(resincome$fit)
 
@@ -242,7 +249,7 @@ ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
   labs(x = "Recovery Rate", y = "Residuals")
 
 ```
-This graph also indicates that the model that includes income as well as dietary deviance is a better predictor of covid outcomes than a model that solely relies on dietary deviance. The residuals are more evenly spread along 0. 
+This graph also indicates that the model that includes income as well as dietary deviation is a better predictor of covid outcomes than a model that solely relies on dietary deviation. The residuals are more evenly spread along 0. 
 
 SUMMARY
 
