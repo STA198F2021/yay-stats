@@ -48,7 +48,7 @@ style_xaringan(
 
 class: inverse, middle, center
 
-
+---
 
 ## Research Question
 
@@ -120,7 +120,7 @@ food <- food %>%
 --
 
 .pull-left[
-```{r countries-mean-graph, message=FALSE, echo = FALSE, warning=FALSE}
+```{r countries-mean-graph, out.width="100%", fig.width=4, message=FALSE, echo = FALSE, warning=FALSE}
 
 meanfood <- food %>%
   summarize(Group = "Countries", meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
@@ -146,7 +146,7 @@ Panama", "Paraguay", "Peru", "Philippines", "Republic of Moldova", "Romania", "R
 --
 
 .pull-right[
-```{r comparing_dietary_means_to_USDA, message=FALSE, echo = FALSE, warning=FALSE}
+```{r comparing_dietary_means_to_USDA, out.width="100%", fig.width=4, message=FALSE, echo = FALSE, warning=FALSE}
 meanfoodincome <- food %>%
   group_by(income) %>%
   summarize(meangrains = mean(Grains), meanveg = mean(Vegetables2), meanfruit = mean(Fruits), meanfat = mean(Fats), meanprotein = mean(Protein), meanother = mean(Other)) %>% 
@@ -157,9 +157,11 @@ meanfoodincome %>%
   mutate(income = fct_relevel(income, 
             "HIC", "UMIC", "LMIC", 
             "LIC", "USDA")) %>%
-  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group", subtitle="broken down by income category and compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
 ]
+
+--
 
 .footnote[
 Overall ANOVA tests indicate that at least one mean food group varies in each income group in all food groups except for Fruit
@@ -170,116 +172,223 @@ Overall ANOVA tests indicate that at least one mean food group varies in each in
 
 ## Recovery Rate
 
-```{r boring-regression}
-# a boring regression
-model <- lm(dist ~ speed, data = cars)
-tidy(model)
-glance(model)
+- Created variable called 'Recovery Rate', calculated as Percent of Population Recovered from COVID-19/ Percent of Population Confirmed to have COVID-19
+
+--
+
+```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7, warning=FALSE, fig.align = "center"}
+food <- food %>%
+  mutate(rec_rate=Recovered/Confirmed) %>% 
+  filter(rec_rate > 0)
+
+food %>%
+  mutate(income = fct_relevel(income, 
+            "HIC", "UMIC", "LMIC", 
+            "LIC", "USDA")) %>%
+  ggplot(aes(x = rec_rate, fill = income)) + geom_boxplot() + labs(y = NULL, x = "Percent Recovery for Confirmed COVID Cases", fill = "Income Status", title = "Boxplot Showing COVID Recovery Data Group 
+by Country Income Status")
 ```
 
 ---
 
-## Plots
+## Linear Regression Model to Assess Effects of Diet on COVID-19 Recovery Rates
 
-```{r recode-species, echo = FALSE}
-# In this chunk I'm doing a bunch of analysis that I don't want to present 
-# in my slides. But I need the resulting data frame for a plot I want to present.
-penguins_modified <- penguins %>%
-  mutate(species = fct_other(species, keep = "Adelie"))
+--
+
+```{r creating_deviation_varibles, echo = FALSE, message=FALSE, warning=FALSE}
+food <- food %>% 
+  mutate(deviation_grains = (30 - Grains)^2) %>% 
+  mutate(deviation_veg = (40 - Vegetables2)^2) %>% 
+  mutate(deviation_fruit = (10 - Fruits)^2) %>% 
+  mutate(deviation_protein = (20 - Protein)^2) %>% 
+  mutate(deviation_tot = deviation_grains + deviation_protein + deviation_fruit + deviation_veg) %>% 
+  filter(rec_rate>0)
 ```
 
-```{r plot-penguins, echo = FALSE, warning = FALSE, fig.alt = "Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all the others combined together. There is a relatively strong, positive relationship between the two variables. The Adelie penguins are clustered together but they don't exhibit a different trend than the rest of the penguins."}
-# Code hidden with echo = FALSE
-# Uses modified penguins dataset from previous chunk
-# Play around with height and width until you're happy with the look
-ggplot(penguins_modified, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
-  geom_point() + 
-  theme_minimal()
+```{r graphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE, fig.align = "center", fig.height = 2, fig.width = 5}
+food %>% 
+  filter(deviation_tot<750) %>% 
+ggplot(aes(x = deviation_tot, y = rec_rate)) +
+  geom_point()+geom_smooth(method="lm") + labs(
+    title = "COVID-19 Recovery Rate in relationship to deviation from USDA 
+    suggested Dietary Intake",
+    x = "Deviation from USDA suggested diet",
+    y = "COVID-19 Recovery Rate")
 ```
 
 ---
+# Linear Regression Model
+--
+```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
+res <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_tot, data = food) %>% 
+  tidy() %>% 
+  print()
+```
+--
+## Adjusted R Squared
+```{r Linear_Model_no_income_r2, echo = FALSE, warning=FALSE, message=FALSE}
+linear<-lm(rec_rate~deviation_tot, data=food)
+glance(linear)$adj.r.squared %>% 
+  print()
+```
 
-## Plot and text
+--
+
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.0002 lower.
+
+--
+
+- However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data. 
+---
+### Linear Regression Conditioning Income and Dietary Deviation
 
 .pull-left[
-- Some text
-- goes here
+```{r lgraphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE}
+food %>% 
+  filter(deviation_tot<750) %>% 
+ggplot(aes(x = deviation_tot, y = rec_rate)) +
+  geom_point()+geom_smooth(method="lm") + labs(
+    title = "COVID-19 Recovery Rate in relationship to deviation from USDA 
+    suggested Dietary Intake",
+    x = "Deviation from USDA suggested diet",
+    y = "COVID-19 Recovery Rate")
+```
 ]
+
+--
+
 .pull-right[
-```{r warning=FALSE, out.width="100%", fig.width=4, echo=FALSE}
-# see how I changed out.width and fig.width from defaults
-# to make the figure bigger
-ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
-  geom_boxplot() +
-  theme_minimal()
+```{r lLinear_Model_with_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+food %>% 
+  filter(deviation_tot<750) %>% 
+ggplot(aes(x = deviation_tot, y = rec_rate, color=income)) +
+  geom_point()+geom_smooth(method="lm", se = FALSE) + labs(
+    title = "COVID-19 Recovery Rate in relationship to deviation from USDA suggested Dietary Intake",
+    x = "Deviation from USDA suggested diet",
+    y = "COVID-19 Recovery Rate")
 ```
 ]
 
 ---
 
-class: inverse, middle, center
-
-# A new section...
-
----
-
-## Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
-
-```{r penguins-table, echo = FALSE}
-kable(head(penguins), format = "html")
+#### Linear Regression Model without income
+```{r lLinear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
+res <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_tot, data = food) %>% 
+  tidy() %>% 
+  print()
 ```
 
----
+--
 
-## Images
-
-```{r castle, echo = FALSE, out.width = "40%", fig.align = "center", fig.cap = "Image credit: Danielle Navarro, Percolate."}
-include_graphics("presentation/img/watercolour_sys02_img32_percolate.jpg")
+#### Linear Regression Model with income
+```{r lLinear_Model_with_income, echo = FALSE, warning=FALSE, message=FALSE}
+resincome <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_tot+income, data = food) %>% 
+  tidy () %>% 
+  print()
 ```
 
-Or you can also include a full page image. See next slide.
+--
+
+- We cannot reject the null hypothesis that there is no relationship between COVID recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. 
+
+--
+
+- However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviation total constant. 
 
 ---
+## Comparing Models
 
-background-image: url(presentaiimg/watercolour_sys02_img32_percolate.jpg)
+--
 
----
+.pull-left[
+```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
+res <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_tot, data = food) 
 
-## Math Expressions
+res_aug <-augment(res$fit)
 
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
+ggplot(res_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Recovery Rate", y = "Residuals", title = "Residual")
 ```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+]
+
+--
+
+.pull-right[
+```{r Linear_Model_with_income_graphres, echo = FALSE, warning=FALSE, message=FALSE}
+resincome <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(rec_rate ~ deviation_tot+income, data = food) 
+
+resincome_aug <-augment(resincome$fit)
+
+ggplot(resincome_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "gray", lty = "dashed") +
+  labs(x = "Recovery Rate", y = "Residuals")
 ```
+]
 
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+--
+.pull-left[
+#### Adjusted R Squared without income
+```{r lLinear_Model_no_income_r2, echo = FALSE, warning=FALSE, message=FALSE}
+linear<-lm(rec_rate~deviation_tot, data=food)
+glance(linear)$adj.r.squared %>% 
+  print()
+```
+]
 
-Limitations:
+--
 
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
 
-1. There should not be spaces after the opening `$` or before the closing `$`.
+.pull-right[
+#### Adjusted R Squared with income
+```{r lLinear_Model_with_income_r2, echo = FALSE, warning=FALSE, message=FALSE}
+reslinear<-lm(rec_rate~deviation_tot+income, data=food)
+glance(reslinear)$adj.r.squared %>% 
+  print()
+```
+]
 
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+
+- This model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
 
 ---
+# Discussion
 
-class: inverse, middle, center
+### Conclusion
 
-# Wrap up
+- Significant relationship between dietary deviation and COVID-19 Recovery Rates
+--
 
----
+### Limitations
 
-## Feeling adventurous?
+- Vaccination Rates
 
-- Want to find out more about `xaringan`? See https://slides.yihui.name/xaringan/#1.
+--
 
-- You are welcomed to use the default styling of the slides. In fact, that's what I expect the majority of you will do. You will differentiate yourself with the content of your presentation.
+- Variation of Individual Ideas
 
-- But some of you might want to play around with slide styling. The 
-`xaringanthemer` provides some solutions for this that: https://pkg.garrickadenbuie.com/xaringanthemer.
+--
 
-- And if you want more bells and whistles, there is also `xaringanExtra`: https://pkg.garrickadenbuie.com/xaringanExtra.
+### Future Directions
+
+- Control for vaccination rates
+
+--
+
+- Investigate individuals diet
+
+
+
+

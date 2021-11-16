@@ -4,7 +4,7 @@
     <title>Nutrition and COVID-19 Outcomes</title>
     <meta charset="utf-8" />
     <meta name="author" content="Yay Stats   Arthi Vaidyanathan and Denise Shkurovich" />
-    <meta name="date" content="2021-11-15" />
+    <meta name="date" content="2021-11-16" />
     <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Does Deviation from USDA Nutritional Guidelines by Country Correlate With COVID Recovery Rates?
 ### Yay Stats <br> Arthi Vaidyanathan and Denise Shkurovich
 ### Duke University
-### 2021-11-15
+### 2021-11-16
 
 ---
 
@@ -31,233 +31,247 @@ class: center, middle, inverse, title-slide
 
 class: inverse, middle, center
 
-# Using xaringan
-
 ---
 
-## xaringan
+## Research Question
 
-- The presentation is created using the `xaringan` package
+How does nutrition impact recovery from COVID-19 infections?
 
-- Use `---` to separate slides and `--` for incremental builds
+--
+### Why do we care?
+--
+
+- Previous studies show that maintaining a healthy diet can decrease risk of severe infection by promoting the immune system (Messina et al. 2020, Iddir et. al 2020).
 
 --
 
-- Like this
+- Adequate protein consumption is essential for antibody production and poor nutrient consumption has been shown to increase inflammation and oxidative stress (Iddir et. al 2020).
+
+--
+
+- There is an observed increase in mortality rates among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be correlated with an individual's diet (Onishi 2020).
 
 ---
 
-## Layouts
+## Source and Analysis Plan
 
-You can use plain text
+--
 
-- or bullet points
+### Dataset:
+
+--
+
+- "COVID-19 Healthy Diet Dataset” comes from Kaggle. 
+
+--
+
+- Energy intake (kcal) as percentages of total diet by food group. 
+
+--
+
+- Provides data for total confirmed COVID-19 cases, recovered COVID cases, COVID deaths, and active COVID cases for 170 countries.
+
+--
+
+### Analysis Plan:
+
+--
+- The USDA Center for Nutrition Policy and Promotion suggests a dietary intake which consists of 30% grains, 40% vegetable, 10% fruits, and 20% proteins
+
+--
+
+- We want to see if the dietary of breakdown of countries aligns with the USDA suggested values
+
+--
+
+- Whether deviation or adherance to this suggested breakdown impacts COVID-19 recovery rates
+
+---
+# Preliminary Visualizations
+
+
+
+--
 
 .pull-left[
-or text in two columns `\(^*\)`
-]
-.pull-right[
-- like
-- this
+&lt;img src="presentation_files/figure-html/countries-mean-graph-1.png" width="100%" /&gt;
 ]
 
+
+
+--
+
+.pull-right[
+&lt;img src="presentation_files/figure-html/comparing_dietary_means_to_USDA-1.png" width="100%" /&gt;
+]
+
+--
+
 .footnote[
-[*] And add footnotes
+Overall ANOVA tests indicate that at least one mean food group varies in each income group in all food groups except for Fruit
+
 ]
 
 ---
 
-## Code
+## Recovery Rate
+
+- Created variable called 'Recovery Rate', calculated as Percent of Population Recovered from COVID-19/ Percent of Population Confirmed to have COVID-19
+
+--
+
+&lt;img src="presentation_files/figure-html/box-plot-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Linear Regression Model to Assess Effects of Diet on COVID-19 Recovery Rates
+
+--
 
 
-```r
-# a boring regression
-model &lt;- lm(dist ~ speed, data = cars)
-tidy(model)
-```
+
+&lt;img src="presentation_files/figure-html/graphs_of_deviation_vs_recovery_rate-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+# Linear Regression Model
+--
 
 ```
 ## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   -17.6      6.76      -2.60 1.23e- 2
-## 2 speed           3.93     0.416      9.46 1.49e-12
+##   term           estimate std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.886     0.0377       23.5  1.83e-53
+## 2 deviation_tot -0.000292  0.000123     -2.36 1.94e- 2
 ```
-
-```r
-glance(model)
-```
+--
+## Adjusted R Squared
 
 ```
-## # A tibble: 1 × 12
-##   r.squared adj.r.squared sigma statistic  p.value    df logLik   AIC   BIC
-##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1     0.651         0.644  15.4      89.6 1.49e-12     1  -207.  419.  425.
-## # … with 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;
+## [1] 0.02800442
 ```
 
+--
+
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 0.0002 lower.
+
+--
+
+- However, the adjusted r squared value is quite low. It indicates that our model only accounts for 2.8% of the variance in the data. 
 ---
-
-## Plots
-
-
-
-&lt;img src="presentation_files/figure-html/plot-penguins-1.png" title="Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all the others combined together. There is a relatively strong, positive relationship between the two variables. The Adelie penguins are clustered together but they don't exhibit a different trend than the rest of the penguins." alt="Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all the others combined together. There is a relatively strong, positive relationship between the two variables. The Adelie penguins are clustered together but they don't exhibit a different trend than the rest of the penguins." width="70%" /&gt;
-
----
-
-## Plot and text
+### Linear Regression Conditioning Income and Dietary Deviation
 
 .pull-left[
-- Some text
-- goes here
+&lt;img src="presentation_files/figure-html/lgraphs_of_deviation_vs_recovery_rate-1.png" width="70%" /&gt;
 ]
+
+--
+
 .pull-right[
-&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+&lt;img src="presentation_files/figure-html/lLinear_Model_with_income_graph-1.png" width="70%" /&gt;
 ]
 
 ---
 
-class: inverse, middle, center
-
-# A new section...
-
----
-
-## Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
-
-&lt;table&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt; species &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; island &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; bill_length_mm &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; bill_depth_mm &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; flipper_length_mm &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; body_mass_g &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; sex &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 39.1 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 18.7 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 181 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3750 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; male &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 39.5 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 17.4 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 186 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3800 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; female &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 40.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 18.0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 195 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3250 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; female &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 36.7 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 19.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 193 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3450 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; female &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Adelie &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Torgersen &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 39.3 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 20.6 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 190 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3650 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; male &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2007 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
----
-
-## Images
-
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="presentation/img/watercolour_sys02_img32_percolate.jpg" alt="Image credit: Danielle Navarro, Percolate." width="40%" /&gt;
-&lt;p class="caption"&gt;Image credit: Danielle Navarro, Percolate.&lt;/p&gt;
-&lt;/div&gt;
-
-Or you can also include a full page image. See next slide.
-
----
-
-background-image: url(presentaiimg/watercolour_sys02_img32_percolate.jpg)
-
----
-
-## Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &amp;#36;\alpha+\beta$ renders `\(\alpha+\beta\)`. You can use the display style with double dollar signs:
+#### Linear Regression Model without income
 
 ```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+## # A tibble: 2 × 5
+##   term           estimate std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.886     0.0377       23.5  1.83e-53
+## 2 deviation_tot -0.000292  0.000123     -2.36 1.94e- 2
 ```
 
-`$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$`
+--
 
-Limitations:
+#### Linear Regression Model with income
 
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+```
+## # A tibble: 5 × 5
+##   term           estimate std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.813     0.0519      15.6   1.05e-33
+## 2 deviation_tot -0.000209  0.000133    -1.56  1.20e- 1
+## 3 incomeLIC      0.0328    0.0547       0.599 5.50e- 1
+## 4 incomeLMIC     0.0774    0.0426       1.82  7.10e- 2
+## 5 incomeUMIC     0.0830    0.0453       1.83  6.89e- 2
+```
 
-1. There should not be spaces after the opening `$` or before the closing `$`.
+--
 
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+- We cannot reject the null hypothesis that there is no relationship between COVID recovery rate and dietary deviation from USDA suggested since our p value is greater than 0.05. 
+
+--
+
+- However, compared to high income countries, lower middle and upper middle income countries on average have a .077 and .083 higher recovery rate holding deviation total constant. 
 
 ---
+## Comparing Models
 
-class: inverse, middle, center
+--
 
-# Wrap up
+.pull-left[
+&lt;img src="presentation_files/figure-html/Linear_Model_no_income_graph-1.png" width="70%" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="presentation_files/figure-html/Linear_Model_with_income_graphres-1.png" width="70%" /&gt;
+]
+
+--
+.pull-left[
+#### Adjusted R Squared without income
+
+```
+## [1] 0.02800442
+```
+]
+
+--
+
+
+.pull-right[
+#### Adjusted R Squared with income
+
+```
+## [1] 0.03726604
+```
+]
+
+
+- This model has a larger adjusted r squared value, (3.7% compared to 2.8%) indicated that it accounts for more variance in the data than the first model that did not include income.
 
 ---
+# Discussion
 
-## Feeling adventurous?
+### Conclusion
 
-- Want to find out more about `xaringan`? See https://slides.yihui.name/xaringan/#1.
+- Significant relationship between dietary deviation and COVID-19 Recovery Rates
+--
 
-- You are welcomed to use the default styling of the slides. In fact, that's what I expect the majority of you will do. You will differentiate yourself with the content of your presentation.
+### Limitations
 
-- But some of you might want to play around with slide styling. The 
-`xaringanthemer` provides some solutions for this that: https://pkg.garrickadenbuie.com/xaringanthemer.
+- Vaccination Rates
 
-- And if you want more bells and whistles, there is also `xaringanExtra`: https://pkg.garrickadenbuie.com/xaringanExtra.
+--
+
+- Variation of Individual Ideas
+
+--
+
+### Future Directions
+
+- Control for vaccination rates
+
+--
+
+- Investigate individuals diet
+
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
