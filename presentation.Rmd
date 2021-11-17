@@ -1,6 +1,5 @@
 ---
 title: "Nutrition and COVID-19 Outcomes"
-subtitle: "Does Deviation from USDA Nutritional Guidelines by Country Correlate With COVID Recovery Rates?"
 author: "Yay Stats <br> Arthi Vaidyanathan and Denise Shkurovich"
 institute: "Duke University"
 date: "`r Sys.Date()`"
@@ -56,7 +55,7 @@ style_mono_light(
   code_font_google = google_font("Fira Mono"))
 ```
 
-class: inverse, left
+class: left
 
 ## Research Question
 
@@ -77,6 +76,8 @@ class: inverse, left
 - There is an observed **increase in mortality rates** among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be **correlated with an individual's diet** (Onishi 2020).
 
 ---
+
+class: inverse
 
 ## Source and Analysis Plan
 
@@ -112,6 +113,8 @@ class: inverse, left
 - Then, we will analyze whether deviation from this suggested breakdown impacts COVID-19 recovery rates
 
 ---
+class: inverse
+
 # Preliminary Visualizations
 
 ```{r make_food_categories, message=FALSE, echo = FALSE, warning=FALSE}
@@ -163,24 +166,16 @@ meanfoodincome %>%
   mutate(income = fct_relevel(income, 
             "HIC", "UMIC", "LMIC", 
             "LIC", "USDA")) %>%
-  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Diet Composition by Food Group") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+  ggplot(aes(x=Means, y=PercentDiet, fill=income))+geom_col(position="dodge") + labs(x="Food Group", y="Percent of Total Diet Composition", title="Avergae Diet Make up by Food Group 
+Separated by Income", subtitle="Compared to USDA suggested diet") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
 ]
 
---
-
-.footnote[
-ANOVA tests indicate that at least one mean food group varies across income groups in all diet categories except for Fruit
-
-]
 
 ---
 
 ## Recovery Rate
 
-- Created variable called 'Recovery Rate', calculated as Percent of Population Recovered from COVID-19/ Percent of Population Confirmed to have COVID-19
-
---
 
 ```{r box-plot, massage = FALSE, echo = FALSE, fig.height = 3, fig.width = 7, warning=FALSE, fig.align = "center"}
 food <- food %>%
@@ -196,6 +191,7 @@ by Country Income Status")
 ```
 
 ---
+class: inverse
 
 ## Linear Regression Model to Assess Effects of Diet on COVID-19 Recovery Rates
 
@@ -215,7 +211,7 @@ food <- food %>%
 ```{r graphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE, fig.align = "center", fig.height = 2, fig.width = 5}
 food %>% 
 ggplot(aes(x = deviation_tot, y = rec_rate)) +
-  geom_point()+geom_smooth(method="lm") + labs(
+  geom_point()+geom_smooth(method="lm", se = FALSE) + labs(
     title = "COVID-19 Recovery Rate in relationship to deviation from USDA 
     suggested Dietary Intake",
     x = "Deviation from USDA suggested diet",
@@ -224,7 +220,7 @@ ggplot(aes(x = deviation_tot, y = rec_rate)) +
 
 ---
 # Linear Regression Model
---
+
 ```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
   set_engine("lm") %>%
@@ -232,7 +228,7 @@ res <- linear_reg() %>%
   tidy() %>% 
   print()
 ```
---
+
 ## Adjusted R Squared
 ```{r Linear_Model_no_income_r2, echo = FALSE, warning=FALSE, message=FALSE}
 linear<-lm(rec_rate~deviation_tot, data=food)
@@ -249,6 +245,7 @@ glance(linear)$adj.r.squared %>%
 - However, the adjusted r squared value is quite low. It indicates that our model only accounts for 5% of the variance in the data. 
 ---
 ### Linear Regression Conditioning Income and Dietary Deviation
+class: inverse
 
 .pull-left[
 ```{r lgraphs_of_deviation_vs_recovery_rate, message=FALSE, echo = FALSE, warning=FALSE}
@@ -297,20 +294,20 @@ resincome <- linear_reg() %>%
   print()
 ```
 
+
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate. In our reference group of HIC, every integer increase in deviation rate, the chances of recovering are on average 7% lower. 
 --
 
-- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate, conditioning on the other variables in the model, since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 7% lower. 
---
-
-- We fail to reject the null hypothesis that the value for
-the intercepts or slopes for the other income groups is the same as that of the reference group.
+- We fail to reject the null hypothesis that the value for the intercepts or slopes for the other income groups is the same as that of the reference group.
 
 
 
 ---
+class: inverse
+
 ## Comparing Models
 
---
+
 
 .pull-left[
 ```{r Linear_Model_no_income_graph, echo = FALSE, warning=FALSE, message=FALSE}
@@ -354,8 +351,6 @@ glance(linear)$adj.r.squared %>%
 ```
 ]
 
---
-
 
 .pull-right[
 #### Adjusted R Squared with income
@@ -366,39 +361,28 @@ glance(reslinear)$adj.r.squared %>%
 ```
 ]
 
-
---
-
-- This model has a slightly larger adjusted r squared value, (6.17% compared to 5.05%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
+- This model has a slightly larger adjusted r squared value, (5.05% compared to 6%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
 
 ---
+class: inverse
+
 # Discussion
 
 ### Conclusion
-
-- Significant relationship between dietary deviation and COVID-19 Recovery Rates
---
+- Significant Relationship Between Dietary Deviation and COVID-19 Recovery
 
 ### Limitations
+- Broad Diet Categories 
+- Variation Between Diets of Individuals Within Countries
+- Lack of Controlling for Vaccination Rate
+- Lack of Controlling for Age
 
-- Vaccination Rates
-
---
-
-- Variation of Individual Ideas
-
---
-
-### Future Directions
-
-- Control for vaccination rates
-
---
-
-- Investigate individuals diet
+### Future Study Needed
+- Address Limitations and Provide Recommendations to Improve Resilience from COVID and Future Infections
 
 ---
 ### Works Cited:
+
 
 Iddir M., et al. Strengthening the Immune System and Reducing Inflammation and Oxidative Stress through Diet and Nutrition: Considerations during the COVID-19 Crisis. Nutrients. 2020;12(6):1562.
 

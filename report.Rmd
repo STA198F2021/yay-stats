@@ -36,6 +36,7 @@ Messina G., et al. Functional Role of Dietary Intervention to Improve the Outcom
 
 Onishi J., et al. Can Dietary Fatty Acids Affect the COVID-19 Infection Outcome in Vulnerable Populations? mBio. 11(4).
 
+
 # Exploratory Data Analysis
 ## Food Group Visualizations
 
@@ -101,6 +102,9 @@ meanfoodincome %>%
 In this graph, we summarized the break down of diet by income country in comparison to the  recommended values from USDA. This visualization shows that low income countries seem to be consuming less than the recommended amount of protein and more grains than recommended. We can also see that higher income countries consume more protein and less grains than lower income countries. This graph suggests that in our analysis we should in fact include income level as a possible predictor of COVID outcomes since countries seem to show trends in their nutrition in most categories by income level. 
 
 ## Food Group Data Analysis
+
+Below, we use ANOVA tests to see if the means for each of the dietary categories differ between at least one of the income groups. 
+
 ```{r, ANOVA_grains, echo=FALSE,message=FALSE, warning=FALSE}
 summary(aov(Grains~income,data=food))
 ```
@@ -187,9 +191,7 @@ Suggested Dietary Intake",
     y = "COVID-19 Recovery Rate")
 ```
 
-Here we compared the relationship between deviation from USDA suggested intake with recovery rates from COVID-19. The recovery rates were calculated by calculated the percent of the population that recovered from COVID-19 with the percent of the population that was diagnosed with COVID-19.
-
-In the graph, we see that there is a negative correlation between recovery rates and deviation from USDA suggested dietary intake. This suggests that as ones dietary intake begins to differ from the USDA suggested intake, they on average seem to have a lower change of recovering from COVID-19.
+Here we compared the relationship between deviation from USDA suggested intake with recovery rates from COVID-19. In the graph, we see that there is a negative correlation between recovery rates and deviation from USDA suggested dietary intake. This suggests that as ones dietary intake begins to differ from the USDA suggested intake, they on average seem to have a lower change of recovering from COVID-19.
 
 ```{r Linear_Model_no_income, echo = FALSE, warning=FALSE, message=FALSE}
 res <- linear_reg() %>%
@@ -247,7 +249,6 @@ resincome <- linear_reg() %>%
   tidy () %>% 
   print()
 ```
-
 According to this model, as the deviation value for grains increases by 1 unit, COVID recovery rates decrease by 0.056%. This is a slightly stronger relationship than that of total deviation and suggests that grain consumption could play a more consequential role in COVID recovery rate than the other food groups explored.
 
 ## Linear model of correlation between dietary deviation and COVID recovery rate accounting for income

@@ -13,7 +13,6 @@
 class: center, middle, inverse, title-slide
 
 # Nutrition and COVID-19 Outcomes
-## Does Deviation from USDA Nutritional Guidelines by Country Correlate With COVID Recovery Rates?
 ### Yay Stats <br> Arthi Vaidyanathan and Denise Shkurovich
 ### Duke University
 ### 2021-11-16
@@ -34,7 +33,7 @@ class: inverse, middle, center
 
 
 
-class: inverse, left
+class: left
 
 ## Research Question
 
@@ -55,6 +54,8 @@ class: inverse, left
 - There is an observed **increase in mortality rates** among patients infected with COVID-19 which have chronic inflammatory diseases such as obesity, diabetes, and hypertension. The prevalence of these chronic inflammatory diseases are known to be **correlated with an individual's diet** (Onishi 2020).
 
 ---
+
+class: inverse
 
 ## Source and Analysis Plan
 
@@ -90,6 +91,8 @@ class: inverse, left
 - Then, we will analyze whether deviation from this suggested breakdown impacts COVID-19 recovery rates
 
 ---
+class: inverse
+
 # Preliminary Visualizations
 
 
@@ -108,24 +111,16 @@ class: inverse, left
 &lt;img src="presentation_files/figure-html/comparing_dietary_means_to_USDA-1.png" width="100%" /&gt;
 ]
 
---
-
-.footnote[
-ANOVA tests indicate that at least one mean food group varies across income groups in all diet categories except for Fruit
-
-]
 
 ---
 
 ## Recovery Rate
 
-- Created variable called 'Recovery Rate', calculated as Percent of Population Recovered from COVID-19/ Percent of Population Confirmed to have COVID-19
-
---
 
 &lt;img src="presentation_files/figure-html/box-plot-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
+class: inverse
 
 ## Linear Regression Model to Assess Effects of Diet on COVID-19 Recovery Rates
 
@@ -137,7 +132,7 @@ ANOVA tests indicate that at least one mean food group varies across income grou
 
 ---
 # Linear Regression Model
---
+
 
 ```
 ## # A tibble: 2 × 5
@@ -146,7 +141,7 @@ ANOVA tests indicate that at least one mean food group varies across income grou
 ## 1 (Intercept)    91.7       4.00       22.9  5.43e-52
 ## 2 deviation_tot  -0.0414    0.0135     -3.07 2.54e- 3
 ```
---
+
 ## Adjusted R Squared
 
 ```
@@ -162,6 +157,7 @@ ANOVA tests indicate that at least one mean food group varies across income grou
 - However, the adjusted r squared value is quite low. It indicates that our model only accounts for 5% of the variance in the data. 
 ---
 ### Linear Regression Conditioning Income and Dietary Deviation
+class: inverse
 
 .pull-left[
 &lt;img src="presentation_files/figure-html/lgraphs_of_deviation_vs_recovery_rate-1.png" width="70%" /&gt;
@@ -203,20 +199,20 @@ ANOVA tests indicate that at least one mean food group varies across income grou
 ## 8 deviation_tot:incomeUMIC   0.0474    0.0466     1.02  3.11e- 1
 ```
 
+
+- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate. In our reference group of HIC, every integer increase in deviation rate, the chances of recovering are on average 7% lower. 
 --
 
-- This linear regression model shows that there is a significant relationship between recovery rate and deviation rate, conditioning on the other variables in the model, since our p value is less than the alpha level of 0.05. For every integer increase in deviation rate, the chances of recovering are on average 7% lower. 
---
-
-- We fail to reject the null hypothesis that the value for
-the intercepts or slopes for the other income groups is the same as that of the reference group.
+- We fail to reject the null hypothesis that the value for the intercepts or slopes for the other income groups is the same as that of the reference group.
 
 
 
 ---
+class: inverse
+
 ## Comparing Models
 
---
+
 
 .pull-left[
 &lt;img src="presentation_files/figure-html/Linear_Model_no_income_graph-1.png" width="70%" /&gt;
@@ -237,8 +233,6 @@ the intercepts or slopes for the other income groups is the same as that of the 
 ```
 ]
 
---
-
 
 .pull-right[
 #### Adjusted R Squared with income
@@ -248,39 +242,28 @@ the intercepts or slopes for the other income groups is the same as that of the 
 ```
 ]
 
-
---
-
-- This model has a slightly larger adjusted r squared value, (6.17% compared to 5.05%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
+- This model has a slightly larger adjusted r squared value, (5.05% compared to 6%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
 
 ---
+class: inverse
+
 # Discussion
 
 ### Conclusion
-
-- Significant relationship between dietary deviation and COVID-19 Recovery Rates
---
+- Significant Relationship Between Dietary Deviation and COVID-19 Recovery
 
 ### Limitations
+- Broad Diet Categories 
+- Variation Between Diets of Individuals Within Countries
+- Lack of Controlling for Vaccination Rate
+- Lack of Controlling for Age
 
-- Vaccination Rates
-
---
-
-- Variation of Individual Ideas
-
---
-
-### Future Directions
-
-- Control for vaccination rates
-
---
-
-- Investigate individuals diet
+### Future Study Needed
+- Address Limitations and Provide Recommendations to Improve Resilience from COVID and Future Infections
 
 ---
 ### Works Cited:
+
 
 Iddir M., et al. Strengthening the Immune System and Reducing Inflammation and Oxidative Stress through Diet and Nutrition: Considerations during the COVID-19 Crisis. Nutrients. 2020;12(6):1562.
 
