@@ -91,7 +91,6 @@ class: inverse
 - Then, we will analyze whether deviation from this suggested breakdown impacts COVID-19 recovery rates
 
 ---
-class: inverse
 
 # Preliminary Visualizations
 
@@ -113,6 +112,7 @@ class: inverse
 
 
 ---
+class: inverse
 
 ## Recovery Rate
 
@@ -120,7 +120,6 @@ class: inverse
 &lt;img src="presentation_files/figure-html/box-plot-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
-class: inverse
 
 ## Linear Regression Model to Assess Effects of Diet on COVID-19 Recovery Rates
 
@@ -131,6 +130,8 @@ class: inverse
 &lt;img src="presentation_files/figure-html/graphs_of_deviation_vs_recovery_rate-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
+class: inverse
+
 # Linear Regression Model
 
 
@@ -157,19 +158,19 @@ class: inverse
 - However, the adjusted r squared value is quite low. It indicates that our model only accounts for 5% of the variance in the data. 
 ---
 ### Linear Regression Conditioning Income and Dietary Deviation
-class: inverse
 
 .pull-left[
-&lt;img src="presentation_files/figure-html/lgraphs_of_deviation_vs_recovery_rate-1.png" width="70%" /&gt;
+&lt;img src="presentation_files/figure-html/lgraphs_of_deviation_vs_recovery_rate-1.png" width="100%" /&gt;
 ]
 
 --
 
 .pull-right[
-&lt;img src="presentation_files/figure-html/lLinear_Model_with_income_graph-1.png" width="70%" /&gt;
+&lt;img src="presentation_files/figure-html/lLinear_Model_with_income_graph-1.png" width="100%" /&gt;
 ]
 
 ---
+class: inverse
 
 #### Linear Regression Model without income
 
@@ -205,26 +206,24 @@ class: inverse
 
 - We fail to reject the null hypothesis that the value for the intercepts or slopes for the other income groups is the same as that of the reference group.
 
-
-
 ---
-class: inverse
+
 
 ## Comparing Models
 
 
-
 .pull-left[
-&lt;img src="presentation_files/figure-html/Linear_Model_no_income_graph-1.png" width="70%" /&gt;
+&lt;img src="presentation_files/figure-html/Linear_Model_no_income_graph-1.png" width="100%" /&gt;
 ]
 
 --
 
 .pull-right[
-&lt;img src="presentation_files/figure-html/Linear_Model_with_income_graphres-1.png" width="70%" /&gt;
+&lt;img src="presentation_files/figure-html/Linear_Model_with_income_graphres-1.png" width="100%" /&gt;
 ]
 
 --
+
 .pull-left[
 #### Adjusted R Squared without income
 
@@ -242,7 +241,6 @@ class: inverse
 ```
 ]
 
-- This model has a slightly larger adjusted r squared value, (5.05% compared to 6%) indicating that it accounts for slightly more variance in the data than the first model that did not include income
 
 ---
 class: inverse
@@ -252,11 +250,15 @@ class: inverse
 ### Conclusion
 - Significant Relationship Between Dietary Deviation and COVID-19 Recovery
 
+--
+
 ### Limitations
 - Broad Diet Categories 
 - Variation Between Diets of Individuals Within Countries
 - Lack of Controlling for Vaccination Rate
 - Lack of Controlling for Age
+
+--
 
 ### Future Study Needed
 - Address Limitations and Provide Recommendations to Improve Resilience from COVID and Future Infections
